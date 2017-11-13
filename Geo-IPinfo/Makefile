@@ -19,11 +19,11 @@
 #     MIN_PERL_VERSION => q[5.006]
 #     NAME => q[Geo::IPinfo]
 #     PL_FILES => {  }
-#     PREREQ_PM => { LWP::UserAgent=>q[0], JSON=>q[0], Test::More=>q[0] }
+#     PREREQ_PM => { LWP::UserAgent=>q[0], Test::More=>q[0], JSON=>q[0] }
 #     TEST_REQUIRES => {  }
 #     VERSION_FROM => q[lib/Geo/IPinfo.pm]
 #     clean => { FILES=>q[Geo-IPinfo-*] }
-#     dist => { SUFFIX=>q[gz], COMPRESS=>q[gzip -9f] }
+#     dist => { COMPRESS=>q[gzip -9f], SUFFIX=>q[gz] }
 
 # --- MakeMaker post_initialize section:
 
@@ -442,24 +442,24 @@ clean_subdirs :
 
 clean :: clean_subdirs
 	- $(RM_F) \
-	  MYMETA.json core.[0-9][0-9] \
-	  perlmain.c *$(LIB_EXT) \
-	  $(BOOTSTRAP) perl.exe \
-	  core.*perl.*.? MYMETA.yml \
-	  $(INST_ARCHAUTODIR)/extralibs.all tmon.out \
-	  lib$(BASEEXT).def pm_to_blib \
-	  core.[0-9][0-9][0-9][0-9][0-9] *perl.core \
-	  $(BASEEXT).x mon.out \
-	  core.[0-9][0-9][0-9][0-9] pm_to_blib.ts \
-	  $(BASEEXT).bso perl$(EXE_EXT) \
-	  core.[0-9] $(MAKE_APERL_FILE) \
-	  blibdirs.ts *$(OBJ_EXT) \
-	  core.[0-9][0-9][0-9] perl \
-	  $(INST_ARCHAUTODIR)/extralibs.ld $(BASEEXT).exp \
-	  so_locations core \
-	  $(BASEEXT).def 
+	  pm_to_blib.ts mon.out \
+	  blibdirs.ts $(BOOTSTRAP) \
+	  *perl.core $(BASEEXT).exp \
+	  perl.exe MYMETA.json \
+	  core.[0-9][0-9][0-9] MYMETA.yml \
+	  perl$(EXE_EXT) *$(OBJ_EXT) \
+	  core.[0-9] $(BASEEXT).bso \
+	  core.*perl.*.? $(BASEEXT).def \
+	  $(INST_ARCHAUTODIR)/extralibs.all so_locations \
+	  $(MAKE_APERL_FILE) $(INST_ARCHAUTODIR)/extralibs.ld \
+	  *$(LIB_EXT) perl \
+	  perlmain.c core \
+	  $(BASEEXT).x tmon.out \
+	  core.[0-9][0-9] core.[0-9][0-9][0-9][0-9][0-9] \
+	  core.[0-9][0-9][0-9][0-9] lib$(BASEEXT).def \
+	  pm_to_blib 
 	- $(RM_RF) \
-	  blib Geo-IPinfo-* 
+	  Geo-IPinfo-* blib 
 	- $(MV) $(FIRST_MAKEFILE) $(MAKEFILE_OLD) $(DEV_NULL)
 
 
