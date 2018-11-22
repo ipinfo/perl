@@ -1,5 +1,6 @@
 Changes
 lib/Geo/IPinfo.pm
+lib/Geo/Response.pm
 Makefile.PL
 MANIFEST			This list of files
 README
@@ -10,3 +11,4 @@ t/manifest.t
 t/pod-coverage.t
 t/pod.t
 xt/boilerplate.t
+share/countries.json
