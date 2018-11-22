@@ -2,7 +2,6 @@
 use 5.006;
 use strict;
 use warnings;
-use local::lib;
 
 use Test::More;
 

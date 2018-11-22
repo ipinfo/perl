@@ -2,7 +2,6 @@
 
 use strict;
 use warnings;
-use local::lib;
 use Test::More;
 
 if ( $ENV{RELEASE_TESTING} )
