@@ -49,10 +49,6 @@ sub longitude {
   return $_[0]->{"longitude"};
 }
 
-sub jeff {
-  return $_[0]->{"jeff"};
-}
-
 sub postal {
   return $_[0]->{"postal"};
 }
