@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use HTTP::Headers;
 use JSON;
 use File::Share ':all';
-use Geo::Response;
+use Geo::Details;
 
 our $VERSION = '1.0';
 my $DEFAULT_CACHE_MAX_SIZE = 4096;
@@ -124,7 +124,7 @@ sub _get_info
   my ($info, $message) = $self->_lookup_info($ip, $field);
   $self->{message} = $message;
 
-  return defined $info ? Geo::Response->new($info) : undef;
+  return defined $info ? Geo::Details->new($info) : undef;
 }
 
 sub _lookup_info

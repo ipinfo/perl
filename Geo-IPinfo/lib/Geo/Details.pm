@@ -1,4 +1,4 @@
-package Geo::Response;
+package Geo::Details;
 
 use 5.006;
 use strict;

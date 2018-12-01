@@ -41,9 +41,9 @@ $access_token = '123456789abc';
 $ipinfo = Geo::IPinfo->new($access_token);
 
 $ip_address = '216.239.36.21';
-$response = $ipinfo->info($ip_address);
-$city = $response->city # Emeryville;
-$loc = $response->loc # 37.8342,-122.2900;
+$details = $ipinfo->info($ip_address);
+$city = $details->city # Emeryville;
+$loc = $details->loc # 37.8342,-122.2900;
 ```
 
 #### Dependencies
@@ -63,12 +63,12 @@ use Geo::IPinfo;
 
 $access_token = '123456789abc';
 $ipinfo = Geo::IPinfo->new($access_token);
-$response = $ipinfo->info($ip_address);
+$details = $ipinfo->info($ip_address);
 
-if (defined $response)   # valid data returned
+if (defined $details)   # valid data returned
 {
-  $city = $response->city # Emeryville;
-  $loc = $response->loc # 37.8342,-122.2900;
+  $city = $details->city # Emeryville;
+  $loc = $details->loc # 37.8342,-122.2900;
 }
 else   # invalid data obtained, show error message
 {
@@ -76,7 +76,7 @@ else   # invalid data obtained, show error message
 }
 ```
 
-If the `Response` object is empty the error message can be accessed via `Geo::IPinfo->error_msg`.
+If the `Details` object is empty the error message can be accessed via `Geo::IPinfo->error_msg`.
 
 #### Authentication
 
@@ -87,48 +87,48 @@ $access_token = '123456789abc';
 $ipinfo = Geo::IPinfo->new($access_token);
 ```
 
-#### Response Data
+#### Details Data
 
-`Geo::IPinfo->info()` will return a `Response` object that contains all fields listed in the [IPinfo developer docs](https://ipinfo.io/developers/responses#full-response) with a few minor additions. Properties can be accessed through methods of the same name.
+`Geo::IPinfo->info()` will return a `Details` object that contains all fields listed in the [IPinfo developer docs](https://ipinfo.io/developers/responses#full-response) with a few minor additions. Properties can be accessed through methods of the same name.
 
 ```perl
-$hostname = $response->hostname; # cpe-104-175-221-247.socal.res.rr.com
+$hostname = $details->hostname; # cpe-104-175-221-247.socal.res.rr.com
 ```
 
 ##### Country Name
 
-`Response->country_name` will return the country name, as supplied by the `countries.json` file. See below for instructions on changing that file for use with non-English languages. `Response->country` will still return country code.
+`Details->country_name` will return the country name, as supplied by the `countries.json` file. See below for instructions on changing that file for use with non-English languages. `Details->country` will still return country code.
 
 ```perl
-$country = $response->country; # US
-$country_name = $response->country_name; # United States
+$country = $details->country; # US
+$country_name = $details->country_name; # United States
 ```
 
 #### IP Address
 
-`Response->ip_address` will return the an `IPAddr` object from the [Perl Standard Library](https://perl-doc.org/stdlib-2.5.1/libdoc/ipaddr/rdoc/IPAddr.html). `Response->ip` will still return a string.
+`Details->ip_address` will return the an `IPAddr` object from the [Perl Standard Library](https://perl-doc.org/stdlib-2.5.1/libdoc/ipaddr/rdoc/IPAddr.html). `Details->ip` will still return a string.
 
 ```perl
-$ip = $response->ip # 104.175.221.247
-$ip_addr = $response->ip_address # <IPAddr: IPv4:104.175.221.247/255.255.255.255>
+$ip = $details->ip # 104.175.221.247
+$ip_addr = $details->ip_address # <IPAddr: IPv4:104.175.221.247/255.255.255.255>
 ```
 
 ##### Longitude and Latitude
 
-`Response->latitude` and `Response->longitude` will return latitude and longitude, respectively, as strings. `Response->loc` will still return a composite string of both values.
+`Details->latitude` and `Details->longitude` will return latitude and longitude, respectively, as strings. `Details->loc` will still return a composite string of both values.
 
 ```perl
-$loc = $response->loc # 34.0293,-118.3570
-$lat = $response->latitude # 34.0293
-$lon = $response->longitude # -118.3570
+$loc = $details->loc # 34.0293,-118.3570
+$lat = $details->latitude # 34.0293
+$lon = $details->longitude # -118.3570
 ```
 
 ##### Accessing all properties
 
-`Response->all` will return all response data as a dictionary.
+`Details->all` will return all details data as a dictionary.
 
 ```perl
-$response->all = {
+$details->all = {
   "ip": "104.175.221.247",
   "hostname": "cpe-104-175-221-247.socal.res.rr.com",
   "city": "Los Angeles",
@@ -153,7 +153,7 @@ $response->all = {
 
 #### Caching
 
-In-memory caching of `Response` data is provided by default via the [Cache::LRU](https://metacpan.org/pod/Cache::LRU) package. This uses an LRU (least recently used) cache with a TTL (time to live) by default. This means that values will be cached for the specified duration; if the cache's max size is reached, cache values will be invalidated as necessary, starting with the oldest cached value.
+In-memory caching of `Details` data is provided by default via the [Cache::LRU](https://metacpan.org/pod/Cache::LRU) package. This uses an LRU (least recently used) cache with a TTL (time to live) by default. This means that values will be cached for the specified duration; if the cache's max size is reached, cache values will be invalidated as necessary, starting with the oldest cached value.
 
 ##### Modifying cache options
 
@@ -192,7 +192,7 @@ $ipinfo = Geo::IPinfo->new($token, ("timeout" => 5));
 
 #### Internationalization
 
-When looking up an IP address, the response object includes a `$response->country_name` method which includes the country name based on American English. It is possible to return the country name in other languages by setting the `countries` setting when creating the `IPinfo` object.
+When looking up an IP address, the `$details` object includes a `$details->country_name` method which includes the country name based on American English. It is possible to return the country name in other languages by setting the `countries` setting when creating the `IPinfo` object.
 
 The file must be a `.json` file with the following structure:
 

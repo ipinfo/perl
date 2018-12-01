@@ -1,6 +1,6 @@
 Changes
 lib/Geo/IPinfo.pm
-lib/Geo/Response.pm
+lib/Geo/Details.pm
 Makefile.PL
 MANIFEST			This list of files
 README
