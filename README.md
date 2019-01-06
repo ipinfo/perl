@@ -42,8 +42,8 @@ $ipinfo = Geo::IPinfo->new($access_token);
 
 $ip_address = '216.239.36.21';
 $details = $ipinfo->info($ip_address);
-$city = $details->city # Emeryville;
-$loc = $details->loc # 37.8342,-122.2900;
+$city = $details->city; # Emeryville
+$loc = $details->loc; # 37.8342,-122.2900
 ```
 
 #### Dependencies
@@ -67,8 +67,8 @@ $details = $ipinfo->info($ip_address);
 
 if (defined $details)   # valid data returned
 {
-  $city = $details->city # Emeryville;
-  $loc = $details->loc # 37.8342,-122.2900;
+  $city = $details->city; # Emeryville
+  $loc = $details->loc; # 37.8342,-122.2900
 }
 else   # invalid data obtained, show error message
 {
@@ -109,8 +109,8 @@ $country_name = $details->country_name; # United States
 `Details->ip_address` will return the an `IPAddr` object from the [Perl Standard Library](https://perl-doc.org/stdlib-2.5.1/libdoc/ipaddr/rdoc/IPAddr.html). `Details->ip` will still return a string.
 
 ```perl
-$ip = $details->ip # 104.175.221.247
-$ip_addr = $details->ip_address # <IPAddr: IPv4:104.175.221.247/255.255.255.255>
+$ip = $details->ip; # 104.175.221.247
+$ip_addr = $details->ip_address; # <IPAddr: IPv4:104.175.221.247/255.255.255.255>
 ```
 
 ##### Longitude and Latitude
@@ -118,9 +118,9 @@ $ip_addr = $details->ip_address # <IPAddr: IPv4:104.175.221.247/255.255.255.255>
 `Details->latitude` and `Details->longitude` will return latitude and longitude, respectively, as strings. `Details->loc` will still return a composite string of both values.
 
 ```perl
-$loc = $details->loc # 34.0293,-118.3570
-$lat = $details->latitude # 34.0293
-$lon = $details->longitude # -118.3570
+$loc = $details->loc; # 34.0293,-118.3570
+$lat = $details->latitude; # 34.0293
+$lon = $details->longitude; # -118.3570
 ```
 
 ##### Accessing all properties
