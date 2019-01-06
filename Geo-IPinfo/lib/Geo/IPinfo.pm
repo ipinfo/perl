@@ -3,11 +3,18 @@ package Geo::IPinfo;
 use 5.006;
 use strict;
 use warnings;
-
+use Cache::LRU;
 use LWP::UserAgent;
+use HTTP::Headers;
 use JSON;
+use File::Share ':all';
+use Geo::Details;
 
 our $VERSION = '1.0';
+my $DEFAULT_CACHE_MAX_SIZE = 4096;
+my $DEFAULT_CACHE_TTL = 86400;
+my $DEFAULT_COUNTRY_FILE = 'countries.json';
+my $DEFAULT_TIMEOUT = 2;
 
 my %valid_fields = (
                     ip => 1,
@@ -18,25 +25,41 @@ my %valid_fields = (
                     loc => 1,
                     org => 1,
                     postal => 1,
-                    phone => 1
+                    phone => 1,
+                    geo => 1
                 );
 my $base_url = 'https://ipinfo.io/';
+
+my $cache_ttl = 0;
+my $custom_cache = 0;
 
 #-------------------------------------------------------------------------------
 
 sub new
 {
-  my ($pkg, $token) = @_;
+  my ($pkg, $token, %options) = @_;
 
   my $self = {};
-  $self->{token} = defined $token ? "?token=$token" : "";
 
   $self->{base_url} = $base_url;
   $self->{ua} = LWP::UserAgent->new;
-  $self->{ua}->agent("curl/Geo::IP $VERSION");
+  $self->{ua}->ssl_opts("verify_hostname" => 0);
+  $self->{ua}->default_headers(HTTP::Headers->new(
+    Accept => "application/json",
+    Authorization =>  "Bearer " . $token
+  ));
+  $self->{ua}->agent("IPinfoClient/Perl/$VERSION");
+
+  my $timeout = defined $options{"timeout"} ? $options{"timeout"} : $DEFAULT_TIMEOUT;
+  $self->{ua}->timeout($timeout);
+
   $self->{message} = "";
 
   bless($self, $pkg);
+
+  $self->{countries} = $self->_get_countries(%options);
+  $self->{cache} = $self->_build_cache(%options);
+
   return $self;
 }
 
@@ -46,7 +69,7 @@ sub info
 {
   my ($self, $ip) = @_;
 
-  return $self->_getinfo($ip, "");
+  return $self->_get_info($ip, "");
 }
 
 #-------------------------------------------------------------------------------
@@ -55,7 +78,7 @@ sub geo
 {
   my ($self, $ip) = @_;
 
-  return $self->_getinfo($ip, "geo");
+  return $self->_get_info($ip, "geo");
 }
 
 #-------------------------------------------------------------------------------
@@ -64,15 +87,9 @@ sub field
 {
   my ($self, $ip, $field) = @_;
 
-  if (not defined $ip)
-  {
-    $self->{message} = "IP is undefined";
-    return undef;
-  }
-
   if (not defined $field)
   {
-    $self->{message} = "field() requires 2 arguments";
+    $self->{message} = "Field must be defined.";
     return undef;
   }
 
@@ -82,21 +99,7 @@ sub field
     return undef;
   }
 
-  my $url = $self->{base_url} . $ip . "/" . $field . $self->{token};
-
-  my $res = $self->{ua}->get($url);
-  if ($res->is_success)
-  {
-    $self->{message} = "";
-    my $value = $res->decoded_content;
-    chomp $value;
-    return $value;
-  }
-  else
-  {
-    $self->{message} = $res->status_line;
-    return undef;
-  }
+  return $self->_get_info($ip, $field);
 }
 
 #-------------------------------------------------------------------------------
@@ -111,31 +114,145 @@ sub error_msg
 #-------------------------------------------------------------------------------
 #-- private method(s) below , don't call them directly -------------------------
 
-sub _getinfo
+sub _get_info
 {
-  my ($self, $ip, $type) = @_;
+  my ($self, $ip, $field) = @_;
 
-  if (not defined $ip)
+  $ip = defined $ip ? $ip : "";
+  $field = defined $field ? $field : "";
+
+  my ($info, $message) = $self->_lookup_info($ip, $field);
+  $self->{message} = $message;
+
+  return defined $info ? Geo::Details->new($info) : undef;
+}
+
+sub _lookup_info
+{
+  my ($self, $ip, $field) = @_;
+
+  my $key = $ip . "/" . $field;
+  my $cached_info = $self->_lookup_info_from_cache($key);
+
+  if (defined $cached_info)
   {
-    $self->{message} = "IP is undefined";
-    return undef;
+    return ($cached_info, "");
   }
 
-  my $url = $self->{base_url} . $ip . "/" . $type . $self->{token};
-
-  my $res = $self->{ua}->get($url);
-  if ($res->is_success)
+  my ($source_info, $message) = $self->_lookup_info_from_source($key);
+  if (not defined $source_info)
   {
-    $self->{message} = "";
-    return from_json($res->decoded_content);
+    return ($source_info, $message);
+  }
+
+  my $country = $source_info->{"country"};
+  if (defined $country)
+  {
+    $source_info->{"country_name"} = $self->{countries}->{$country};
+  }
+
+  if (defined $source_info->{"loc"})
+  {
+    my ($lat, $lon) = split(/,/, $source_info->{"loc"});
+    $source_info->{"latitude"} = $lat;
+    $source_info->{"longitude"} = $lon;
+  }
+
+  $source_info->{"meta"} = {"time" => time(), "from_cache" => 0};
+  $self->{cache}->set($key, $source_info);
+
+  return ($source_info, $message);
+}
+
+sub _lookup_info_from_cache
+{
+  my ($self, $cache_key) = @_;
+
+  my $cached_info = $self->{cache}->get($cache_key);
+  if (defined $cached_info)
+  {
+    my $timedelta = time() - $cached_info->{"meta"}->{"time"};
+    if ($timedelta <= $cache_ttl || $custom_cache == 1)
+    {
+      $cached_info->{"meta"}->{"from_cache"} = 1;
+
+      return $cached_info;
+    }
+  }
+
+  return undef;
+}
+
+sub _lookup_info_from_source
+{
+  my ($self, $key) = @_;
+
+  my $url = $self->{base_url} . $key;
+  my $response = $self->{ua}->get($url);
+
+  if ($response->is_success)
+  {
+    print $response->decoded_content;
+    my $info = from_json($response->decoded_content);
+
+    return ($info, "");
+  }
+  if ($response->code == 429)
+  {
+    return (undef, "Your monthly request quota has been exceeded.");
+  }
+
+  return (undef, $response->status_line);
+}
+
+sub _get_countries
+{
+  my ($pkg, %options) = @_;
+  my $filename = undef;
+  my $data_location = undef;
+  if (defined $options{'countries'})
+  {
+    $filename = $options{'countries'};
+    $data_location = $filename;
   }
   else
   {
-    $self->{message} = $res->status_line;
-    return undef;
+    $filename = $DEFAULT_COUNTRY_FILE;
+    $data_location = dist_file('Geo-IPinfo', $filename);
   }
+
+  my $json_text = do {
+    open(my $fh, '<', $data_location)
+      or die "Could not open file: $filename $!\n";
+    local $/;
+    <$fh>;
+  };
+
+  return decode_json($json_text);
 }
 
+sub _build_cache
+{
+  my ($pkg, %options) = @_;
+
+  if (defined $options{'cache'})
+  {
+    $custom_cache = 1;
+
+    return $options{'cache'};
+  }
+
+  $cache_ttl = $DEFAULT_CACHE_TTL;
+  if (defined $options{'cache_ttl'})
+  {
+      $cache_ttl = $options{'cache_ttl'};
+  }
+
+  return Cache::LRU->new(
+    size => defined $options{'cache_max_size'} ?
+      $options{'cache_max_size'} : $DEFAULT_CACHE_MAX_SIZE
+  );
+}
 #-------------------------------------------------------------------------------
 
 1;
@@ -144,76 +261,54 @@ __END__
 
 =head1 NAME
 
-Geo::IPinfo -  Official Perl module to use ipinfo.io geolocation services
+Geo::IPinfo -  The official Perl library for IPinfo.
 
 =head1 VERSION
 
-Version 1.0
-  - Initial release
+Version 2.0.0
+  - Included support for country names and caching.
 
 =cut
 
 =head1 SYNOPSIS
 
-Geo::IP provides an object-oriented perl interface to https://ipinfo.io geolocation services
+Geo::IP The official Perl library for IPinfo. IPinfo prides itself on being the most reliable, accurate, and in-depth source of IP address data available anywhere. We process terabytes of data to produce our custom IP geolocation, company, carrier and IP type data sets. You can visit our developer docs at https://ipinfo.io/developers.
 
 A quick usage example:
 
     use Geo::IPinfo;
 
-    my $token = "1234567";
+    $access_token = '123456789abc';
+    $ipinfo = Geo::IPinfo->new($access_token);
 
-    # if you have a valid token, use it
-    my $ipinfo = Geo::IPinfo->new($token);
-
-    # or, if you don't have a token, use this:
-    # my $ipinfo = Geo::IPinfo->new();
-
-    # return a hash reference containing all IP related information
-    my $data = $ipinfo->info("8.8.8.8");
-
-    if (defined $data)   # valid data returned
-    {
-      print "Information about IP 8.8.8.8:\n";
-      for my $key (sort keys %$data )
-      {
-        printf "%10s : %s\n", $key, $data->{$key};
-      }
-      print "\n";
-    }
-    else   # invalid data obtained, show error message
-    {
-      print $ipinfo->error_msg . "\n";
-    }
-
-    # retrieve only city information of the IP address
-    my $city = $ipinfo->field("8.8.8.8", "city");
-
-    print "The city of 8.8.8.8 is $city\n";
-
-
+    $ip_address = '216.239.36.21';
+    $details = $ipinfo->info($ip_address);
+    $city = $details->city; # Emeryville
+    $loc = $details->loc; # 37.8342,-122.2900
 
 =head1 SUBROUTINES/METHODS
 
-=head2 new([token])
+=head2 new([token], [options])
 
-Create an ipinfo object. The 'token' argument (string value) is optional.
+Create an ipinfo object. The 'token' (string value) and 'options' (hash value) arguments are optional.
 
 If 'token' is specified, then it's used to overcome the default
 non-commercial limitation of 1,000 request/day (For more details, see L<https://ipinfo.io/pricing>)
+
+if 'options' is specfied, the included values will allow control over cache policies and country name localization (For more details, see L<https://github.com/ipinfo/perl>).
 
 =cut
 
 =head2 info(ip_address)
 
-Returns a reference to a hash containing all information related to the IP address. In case
+Returns a reference to a Details object containing all information related to the IP address. In case
 of errors, returns undef, the error message can be retrieved with the function 'error_msg()'
 
-The values returned are: ip, hostname, city, region, country, loc, org
+The values can be accessed with the named methods: ip, hostname, city, region, country, country_name, loc, latitude, longitude, postal, asn, company, carrier, and all.
 
 =head2 geo(ip_address)
 
-Returns a reference to a hash containing only the geolocation related data. Returns undef
+Returns a reference to an object containing only the geolocation related data. Returns undef
 in case of errors, the error message can be retrieved with the function 'error_msg'
 
 It's usually faster than getting the full response using 'info()'
@@ -222,7 +317,7 @@ The values returned are: ip, loc, city, region, country
 
 =head2 field(ip_address, field_name)
 
-Returns a string with the contents of field_name for the specified IP address. Returns undef
+Returns a reference to an object containing only the field related data. Returns undef
 if the field is invalid
 
 The possible values of 'field_name' are: ip, hostname, city, region, country, loc, org
@@ -239,7 +334,7 @@ sub function2 {
 
 =head1 AUTHOR
 
-Ben Dowling, C<< <ben at change.me> >>
+Ben Dowling, C<< <ben at ipinfo dot io> >>
 
 =head1 BUGS
 
@@ -277,6 +372,10 @@ L<http://cpanratings.perl.org/d/Geo-IPinfo>
 
 L<http://search.cpan.org/dist/Geo-IPinfo/>
 
+=item * GitHub
+
+L<https://github.com/ipinfo/perl>
+
 =back
 
 
@@ -285,7 +384,7 @@ L<http://search.cpan.org/dist/Geo-IPinfo/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2017 ipinfo.io.
+Copyright 2019 ipinfo.io.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

@@ -2,10 +2,9 @@
 
 use strict;
 use warnings;
-
 use Test::More;
 
-if ( $ENV{RELEASE_TESTING} ) 
+if ( $ENV{RELEASE_TESTING} )
 {
   plan tests => 7;
 }
@@ -14,7 +13,7 @@ else
   plan( skip_all => "Basic usage tests not required for installation" );
 }
 
-use_ok( 'Geo::IPinfo' ); 
+use_ok( 'Geo::IPinfo' );
 
 my $ip;
 

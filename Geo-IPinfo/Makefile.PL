@@ -2,6 +2,9 @@ use 5.006;
 use strict;
 use warnings;
 use ExtUtils::MakeMaker;
+use File::ShareDir::Install;
+
+install_share dist => 'share';
 
 WriteMakefile(
     NAME             => 'Geo::IPinfo',
@@ -18,9 +21,16 @@ WriteMakefile(
         'Test::More' => '0',
     },
     PREREQ_PM => {
-        'LWP::UserAgent'    => '0',
-        'JSON'              => '0',
+        'LWP::UserAgent'          => '0',
+        'JSON'                    => '0',
+        'File::ShareDir::Install' => '0',
+        'Cache::LRU'              => '0',
+        'File::Share'             => '0',
+
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Geo-IPinfo-*' },
 );
+
+package MY;
+use File::ShareDir::Install 'postamble';

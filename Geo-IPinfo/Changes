@@ -3,3 +3,5 @@ Revision history for Geo-IPinfo
 1.0     Nov 07, 2017
         Initial release
 
+2.0     Nov 29, 2018
+        Add Caching, breaking changes
