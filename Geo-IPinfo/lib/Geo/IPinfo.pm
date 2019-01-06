@@ -257,3 +257,148 @@ sub _build_cache
 
 1;
 __END__
+
+
+=head1 NAME
+
+Geo::IPinfo -  The official Perl library for IPinfo.
+
+=head1 VERSION
+
+Version 2.0.0
+  - Included support for country names and caching.
+
+=cut
+
+=head1 SYNOPSIS
+
+Geo::IP The official Perl library for IPinfo. IPinfo prides itself on being the most reliable, accurate, and in-depth source of IP address data available anywhere. We process terabytes of data to produce our custom IP geolocation, company, carrier and IP type data sets. You can visit our developer docs at https://ipinfo.io/developers.
+
+A quick usage example:
+
+    use Geo::IPinfo;
+
+    $access_token = '123456789abc';
+    $ipinfo = Geo::IPinfo->new($access_token);
+
+    $ip_address = '216.239.36.21';
+    $details = $ipinfo->info($ip_address);
+    $city = $details->city; # Emeryville
+    $loc = $details->loc; # 37.8342,-122.2900
+
+=head1 SUBROUTINES/METHODS
+
+=head2 new([token], [options])
+
+Create an ipinfo object. The 'token' (string value) and 'options' (hash value) arguments are optional.
+
+If 'token' is specified, then it's used to overcome the default
+non-commercial limitation of 1,000 request/day (For more details, see L<https://ipinfo.io/pricing>)
+
+if 'options' is specfied, the included values will allow control over cache policies and country name localization (For more details, see L<https://github.com/ipinfo/perl>).
+
+=cut
+
+=head2 info(ip_address)
+
+Returns a reference to a Details object containing all information related to the IP address. In case
+of errors, returns undef, the error message can be retrieved with the function 'error_msg()'
+
+The values can be accessed with the named methods: ip, hostname, city, region, country, country_name, loc, latitude, longitude, postal, asn, company, carrier, and all.
+
+=head2 geo(ip_address)
+
+Returns a reference to an object containing only the geolocation related data. Returns undef
+in case of errors, the error message can be retrieved with the function 'error_msg'
+
+It's usually faster than getting the full response using 'info()'
+
+The values returned are: ip, loc, city, region, country
+
+=head2 field(ip_address, field_name)
+
+Returns a reference to an object containing only the field related data. Returns undef
+if the field is invalid
+
+The possible values of 'field_name' are: ip, hostname, city, region, country, loc, org
+
+=head2 error_msg( )
+
+Returns a string containing the error message of the last operation, it returns an empty
+string if the last operation was successful
+
+=cut
+
+sub function2 {
+}
+
+=head1 AUTHOR
+
+Ben Dowling, C<< <ben at ipinfo dot io> >>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-geo-ipinfo at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Geo-IPinfo>.  I will be notified, and then you'll
+automatically be notified of progress on your bug as I make changes.
+
+
+
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Geo::IPinfo
+
+
+You can also look for information at:
+
+=over 4
+
+=item * RT: CPAN's request tracker (report bugs here)
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Geo-IPinfo>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/Geo-IPinfo>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/Geo-IPinfo>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/Geo-IPinfo/>
+
+=item * GitHub
+
+L<https://github.com/ipinfo/perl>
+
+=back
+
+
+=head1 ACKNOWLEDGEMENTS
+
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2019 ipinfo.io.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+L<http://www.apache.org/licenses/LICENSE-2.0>
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+=cut
+
+# End of Geo::IPinfo
