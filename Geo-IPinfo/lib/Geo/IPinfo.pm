@@ -11,10 +11,11 @@ use File::Share ':all';
 use Geo::Details;
 
 our $VERSION = '1.0';
-my $DEFAULT_CACHE_MAX_SIZE = 4096;
-my $DEFAULT_CACHE_TTL = 86400;
-my $DEFAULT_COUNTRY_FILE = 'countries.json';
-my $DEFAULT_TIMEOUT = 2;
+use constant DEFAULT_CACHE_MAX_SIZE => 4096;
+use constant DEFAULT_CACHE_TTL => 86_400;
+use constant DEFAULT_COUNTRY_FILE => 'countries.json';
+use constant DEFAULT_TIMEOUT => 2;
+use constant HTTP_TOO_MANY_REQUEST => 429;
 
 my %valid_fields = (
                     ip => 1,
@@ -26,7 +27,7 @@ my %valid_fields = (
                     org => 1,
                     postal => 1,
                     phone => 1,
-                    geo => 1
+                    geo => 1,
                 );
 my $base_url = 'https://ipinfo.io/';
 
@@ -43,19 +44,19 @@ sub new
 
   $self->{base_url} = $base_url;
   $self->{ua} = LWP::UserAgent->new;
-  $self->{ua}->ssl_opts("verify_hostname" => 0);
+  $self->{ua}->ssl_opts('verify_hostname' => 0);
   $self->{ua}->default_headers(HTTP::Headers->new(
-    Accept => "application/json",
-    Authorization =>  "Bearer " . $token
+    Accept => 'application/json',
+    Authorization =>  'Bearer ' . $token
   ));
   $self->{ua}->agent("IPinfoClient/Perl/$VERSION");
 
-  my $timeout = defined $options{"timeout"} ? $options{"timeout"} : $DEFAULT_TIMEOUT;
+  my $timeout = defined $options{timeout} ? $options{timeout} : DEFAULT_TIMEOUT;
   $self->{ua}->timeout($timeout);
 
-  $self->{message} = "";
+  $self->{message} = '';
 
-  bless($self, $pkg);
+  bless $self, $pkg;
 
   $self->{countries} = $self->_get_countries(%options);
   $self->{cache} = $self->_build_cache(%options);
@@ -69,7 +70,7 @@ sub info
 {
   my ($self, $ip) = @_;
 
-  return $self->_get_info($ip, "");
+  return $self->_get_info($ip, '');
 }
 
 #-------------------------------------------------------------------------------
@@ -78,7 +79,7 @@ sub geo
 {
   my ($self, $ip) = @_;
 
-  return $self->_get_info($ip, "geo");
+  return $self->_get_info($ip, 'geo');
 }
 
 #-------------------------------------------------------------------------------
@@ -89,14 +90,14 @@ sub field
 
   if (not defined $field)
   {
-    $self->{message} = "Field must be defined.";
-    return undef;
+    $self->{message} = 'Field must be defined.';
+    return;
   }
 
   if (not defined $valid_fields{$field})
   {
     $self->{message} = "Invalid field: $field";
-    return undef;
+    return;
   }
 
   return $self->_get_info($ip, $field);
@@ -118,8 +119,8 @@ sub _get_info
 {
   my ($self, $ip, $field) = @_;
 
-  $ip = defined $ip ? $ip : "";
-  $field = defined $field ? $field : "";
+  $ip = defined $ip ? $ip : '';
+  $field = defined $field ? $field : '';
 
   my ($info, $message) = $self->_lookup_info($ip, $field);
   $self->{message} = $message;
@@ -131,12 +132,12 @@ sub _lookup_info
 {
   my ($self, $ip, $field) = @_;
 
-  my $key = $ip . "/" . $field;
+  my $key = $ip . '/' . $field;
   my $cached_info = $self->_lookup_info_from_cache($key);
 
   if (defined $cached_info)
   {
-    return ($cached_info, "");
+    return ($cached_info, '');
   }
 
   my ($source_info, $message) = $self->_lookup_info_from_source($key);
@@ -145,20 +146,20 @@ sub _lookup_info
     return ($source_info, $message);
   }
 
-  my $country = $source_info->{"country"};
+  my $country = $source_info->{country};
   if (defined $country)
   {
-    $source_info->{"country_name"} = $self->{countries}->{$country};
+    $source_info->{country_name} = $self->{countries}->{$country};
   }
 
-  if (defined $source_info->{"loc"})
+  if (defined $source_info->{'loc'})
   {
-    my ($lat, $lon) = split(/,/, $source_info->{"loc"});
-    $source_info->{"latitude"} = $lat;
-    $source_info->{"longitude"} = $lon;
+    my ($lat, $lon) = split /,/, $source_info->{loc};
+    $source_info->{latitude} = $lat;
+    $source_info->{longitude} = $lon;
   }
 
-  $source_info->{"meta"} = {"time" => time(), "from_cache" => 0};
+  $source_info->{meta} = {time => time(), from_cache => 0};
   $self->{cache}->set($key, $source_info);
 
   return ($source_info, $message);
@@ -171,16 +172,16 @@ sub _lookup_info_from_cache
   my $cached_info = $self->{cache}->get($cache_key);
   if (defined $cached_info)
   {
-    my $timedelta = time() - $cached_info->{"meta"}->{"time"};
+    my $timedelta = time() - $cached_info->{meta}->{time};
     if ($timedelta <= $cache_ttl || $custom_cache == 1)
     {
-      $cached_info->{"meta"}->{"from_cache"} = 1;
+      $cached_info->{meta}->{from_cache} = 1;
 
       return $cached_info;
     }
   }
 
-  return undef;
+  return;
 }
 
 sub _lookup_info_from_source
@@ -195,11 +196,11 @@ sub _lookup_info_from_source
     print $response->decoded_content;
     my $info = from_json($response->decoded_content);
 
-    return ($info, "");
+    return ($info, '');
   }
-  if ($response->code == 429)
+  if ($response->code == HTTP_TOO_MANY_REQUEST)
   {
-    return (undef, "Your monthly request quota has been exceeded.");
+    return (undef, 'Your monthly request quota has been exceeded.');
   }
 
   return (undef, $response->status_line);
@@ -210,20 +211,19 @@ sub _get_countries
   my ($pkg, %options) = @_;
   my $filename = undef;
   my $data_location = undef;
-  if (defined $options{'countries'})
+  if (defined $options{countries})
   {
-    $filename = $options{'countries'};
+    $filename = $options{countries};
     $data_location = $filename;
   }
   else
   {
-    $filename = $DEFAULT_COUNTRY_FILE;
+    $filename = DEFAULT_COUNTRY_FILE;
     $data_location = dist_file('Geo-IPinfo', $filename);
   }
 
   my $json_text = do {
-    open(my $fh, '<', $data_location)
-      or die "Could not open file: $filename $!\n";
+    open my $fh, '<', $data_location or die "Could not open file: $filename $!\n";
     local $/;
     <$fh>;
   };
@@ -235,22 +235,22 @@ sub _build_cache
 {
   my ($pkg, %options) = @_;
 
-  if (defined $options{'cache'})
+  if (defined $options{cache})
   {
     $custom_cache = 1;
 
-    return $options{'cache'};
+    return $options{cache};
   }
 
-  $cache_ttl = $DEFAULT_CACHE_TTL;
-  if (defined $options{'cache_ttl'})
+  $cache_ttl = DEFAULT_CACHE_TTL;
+  if (defined $options{cache_ttl})
   {
-      $cache_ttl = $options{'cache_ttl'};
+      $cache_ttl = $options{cache_ttl};
   }
 
   return Cache::LRU->new(
-    size => defined $options{'cache_max_size'} ?
-      $options{'cache_max_size'} : $DEFAULT_CACHE_MAX_SIZE
+    size => defined $options{cache_max_size} ?
+      $options{cache_max_size} : DEFAULT_CACHE_MAX_SIZE
   );
 }
 #-------------------------------------------------------------------------------
@@ -328,9 +328,6 @@ Returns a string containing the error message of the last operation, it returns 
 string if the last operation was successful
 
 =cut
-
-sub function2 {
-}
 
 =head1 AUTHOR
 
