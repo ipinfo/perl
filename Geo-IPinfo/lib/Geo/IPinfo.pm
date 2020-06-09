@@ -193,7 +193,7 @@ sub _lookup_info_from_source
 
   if ($response->is_success)
   {
-    print $response->decoded_content;
+   
     my $info = from_json($response->decoded_content);
 
     return ($info, '');
