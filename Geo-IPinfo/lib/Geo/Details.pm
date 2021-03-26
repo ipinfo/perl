@@ -53,6 +53,10 @@ sub postal {
   return $_[0]->{postal};
 }
 
+sub timezone {
+  return $_[0]->{timezone};
+}
+
 sub asn {
   return $_[0]->{asn};
 }
@@ -63,6 +67,14 @@ sub company {
 
 sub carrier {
   return $_[0]->{carrier};
+}
+
+sub privacy {
+  return $_[0]->{privacy};
+}
+
+sub abuse {
+  return $_[0]->{abuse};
 }
 
 sub meta {

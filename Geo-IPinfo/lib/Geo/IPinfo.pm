@@ -26,9 +26,10 @@ my %valid_fields = (
                     loc => 1,
                     org => 1,
                     postal => 1,
-                    phone => 1,
+                    timezone => 1,
                     geo => 1,
                 );
+
 my $base_url = 'https://ipinfo.io/';
 
 my $cache_ttl = 0;
@@ -304,7 +305,7 @@ if 'options' is specfied, the included values will allow control over cache poli
 Returns a reference to a Details object containing all information related to the IP address. In case
 of errors, returns undef, the error message can be retrieved with the function 'error_msg()'
 
-The values can be accessed with the named methods: ip, hostname, city, region, country, country_name, loc, latitude, longitude, postal, asn, company, carrier, and all.
+The values can be accessed with the named methods: ip, hostname, city, region, country, country_name, loc, latitude, longitude, postal, asn, company, carrier, privacy, abuse and all.
 
 =head2 geo(ip_address)
 
