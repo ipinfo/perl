@@ -6,7 +6,7 @@ use warnings;
 
 sub new {
     my $class = shift;
-    my $self = shift;
+    my $self  = shift;
 
     bless $self, $class;
 
@@ -14,75 +14,75 @@ sub new {
 }
 
 sub ip {
-  return $_[0]->{ip};
+    return $_[0]->{ip};
 }
 
 sub hostname {
-  return $_[0]->{hostname};
+    return $_[0]->{hostname};
 }
 
 sub city {
-  return $_[0]->{city};
+    return $_[0]->{city};
 }
 
 sub region {
-  return $_[0]->{region};
+    return $_[0]->{region};
 }
 
 sub country {
-  return $_[0]->{country};
+    return $_[0]->{country};
 }
 
 sub country_name {
-  return $_[0]->{country_name};
+    return $_[0]->{country_name};
 }
 
 sub loc {
-  return $_[0]->{loc};
+    return $_[0]->{loc};
 }
 
 sub latitude {
-  return $_[0]->{latitude};
+    return $_[0]->{latitude};
 }
 
 sub longitude {
-  return $_[0]->{longitude};
+    return $_[0]->{longitude};
 }
 
 sub postal {
-  return $_[0]->{postal};
+    return $_[0]->{postal};
 }
 
 sub timezone {
-  return $_[0]->{timezone};
+    return $_[0]->{timezone};
 }
 
 sub asn {
-  return $_[0]->{asn};
+    return $_[0]->{asn};
 }
 
 sub company {
-  return $_[0]->{company};
+    return $_[0]->{company};
 }
 
 sub carrier {
-  return $_[0]->{carrier};
+    return $_[0]->{carrier};
 }
 
 sub privacy {
-  return $_[0]->{privacy};
+    return $_[0]->{privacy};
 }
 
 sub abuse {
-  return $_[0]->{abuse};
+    return $_[0]->{abuse};
 }
 
 sub meta {
-  return $_[0]->{meta};
+    return $_[0]->{meta};
 }
 
 sub all {
-  return $_[0];
+    return $_[0];
 }
 
 #-------------------------------------------------------------------------------
