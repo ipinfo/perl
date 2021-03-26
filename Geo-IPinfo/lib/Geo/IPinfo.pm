@@ -10,7 +10,7 @@ use JSON;
 use File::Share ':all';
 use Geo::Details;
 
-our $VERSION = '1.0';
+our $VERSION = '3.0.0';
 use constant DEFAULT_CACHE_MAX_SIZE => 4096;
 use constant DEFAULT_CACHE_TTL => 86_400;
 use constant DEFAULT_COUNTRY_FILE => 'countries.json';
@@ -266,8 +266,13 @@ Geo::IPinfo -  The official Perl library for IPinfo.
 
 =head1 VERSION
 
+Version 3.0.0
+
+- TODO
+
 Version 2.0.0
-  - Included support for country names and caching.
+
+- Included support for country names and caching.
 
 =cut
 
@@ -305,7 +310,7 @@ if 'options' is specfied, the included values will allow control over cache poli
 Returns a reference to a Details object containing all information related to the IP address. In case
 of errors, returns undef, the error message can be retrieved with the function 'error_msg()'
 
-The values can be accessed with the named methods: ip, hostname, city, region, country, country_name, loc, latitude, longitude, postal, asn, company, carrier, privacy, abuse and all.
+The values can be accessed with the named methods: ip, hostname, city, region, country, country_name, loc, latitude, longitude, postal, timezone, asn, company, carrier, privacy, abuse and all.
 
 =head2 geo(ip_address)
 
@@ -340,15 +345,11 @@ Please report any bugs or feature requests to C<bug-geo-ipinfo at rt.cpan.org>, 
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Geo-IPinfo>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
-
-
-
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
     perldoc Geo::IPinfo
-
 
 You can also look for information at:
 
@@ -376,10 +377,6 @@ L<https://github.com/ipinfo/perl>
 
 =back
 
-
-=head1 ACKNOWLEDGEMENTS
-
-
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2019 ipinfo.io.
@@ -395,7 +392,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
 
 =cut
 
