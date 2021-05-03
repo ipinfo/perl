@@ -1,6 +1,7 @@
-use 5.006;
+use 5.30.3;
 use strict;
 use warnings;
+
 use ExtUtils::MakeMaker;
 use File::ShareDir::Install;
 
@@ -13,7 +14,7 @@ WriteMakefile(
     ABSTRACT_FROM    => 'lib/Geo/IPinfo.pm',
     LICENSE          => 'apache_2_0',
     PL_FILES         => {},
-    MIN_PERL_VERSION => '5.006',
+    MIN_PERL_VERSION => '5.30.3',
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => '0',
     },
@@ -26,7 +27,6 @@ WriteMakefile(
         'File::ShareDir::Install' => '0',
         'Cache::LRU'              => '0',
         'File::Share'             => '0',
-
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Geo-IPinfo-*' },

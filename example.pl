@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-#
+
 use strict;
 use warnings;
 
@@ -35,4 +35,3 @@ else                    # invalid data obtained, show error message
 my $city = $ipinfo->field( '8.8.8.8', 'city' );
 
 print "The city of 8.8.8.8 is $city\n";
-

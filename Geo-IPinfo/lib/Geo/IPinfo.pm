@@ -3,6 +3,7 @@ package Geo::IPinfo;
 use 5.30.3;
 use strict;
 use warnings;
+
 use Cache::LRU;
 use LWP::UserAgent;
 use HTTP::Headers;
@@ -35,8 +36,6 @@ my $base_url = 'https://ipinfo.io/';
 my $cache_ttl    = 0;
 my $custom_cache = 0;
 
-#-------------------------------------------------------------------------------
-
 sub new {
     my ( $pkg, $token, %options ) = @_;
 
@@ -67,23 +66,17 @@ sub new {
     return $self;
 }
 
-#-------------------------------------------------------------------------------
-
 sub info {
     my ( $self, $ip ) = @_;
 
     return $self->_get_info( $ip, '' );
 }
 
-#-------------------------------------------------------------------------------
-
 sub geo {
     my ( $self, $ip ) = @_;
 
     return $self->_get_info( $ip, 'geo' );
 }
-
-#-------------------------------------------------------------------------------
 
 sub field {
     my ( $self, $ip, $field ) = @_;
@@ -101,16 +94,11 @@ sub field {
     return $self->_get_info( $ip, $field );
 }
 
-#-------------------------------------------------------------------------------
-
 sub error_msg {
     my $self = shift;
 
     return $self->{message};
 }
-
-#-------------------------------------------------------------------------------
-#-- private method(s) below , don't call them directly -------------------------
 
 sub _get_info {
     my ( $self, $ip, $field ) = @_;
@@ -234,8 +222,6 @@ sub _build_cache {
         : DEFAULT_CACHE_MAX_SIZE
     );
 }
-
-#-------------------------------------------------------------------------------
 
 1;
 __END__

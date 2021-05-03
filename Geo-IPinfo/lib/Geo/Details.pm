@@ -1,6 +1,6 @@
 package Geo::Details;
 
-use 5.006;
+use 5.30.3;
 use strict;
 use warnings;
 
@@ -84,8 +84,6 @@ sub meta {
 sub all {
     return $_[0];
 }
-
-#-------------------------------------------------------------------------------
 
 1;
 __END__

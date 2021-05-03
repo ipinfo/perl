@@ -1,7 +1,9 @@
 #!perl -T
 
+use 5.30.3;
 use strict;
 use warnings;
+
 use Test::More;
 
 if ( $ENV{RELEASE_TESTING} ) {
