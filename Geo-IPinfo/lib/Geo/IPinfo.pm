@@ -14,6 +14,7 @@ our $VERSION = '1.0';
 use constant DEFAULT_CACHE_MAX_SIZE => 4096;
 use constant DEFAULT_CACHE_TTL => 86_400;
 use constant DEFAULT_COUNTRY_FILE => 'countries.json';
+use constant DEFAULT_EU_COUNTRY_FILE => 'eu.json';
 use constant DEFAULT_TIMEOUT => 2;
 use constant HTTP_TOO_MANY_REQUEST => 429;
 
@@ -57,8 +58,21 @@ sub new
   $self->{message} = '';
 
   bless $self, $pkg;
-
-  $self->{countries} = $self->_get_countries(%options);
+  
+  my $country_file_path = undef;
+  my $eu_country_file_path = undef;
+  if (defined $options{countries}){
+    $country_file_path = $options{countries};
+  }else{
+    $country_file_path = dist_file('Geo-IPinfo', DEFAULT_COUNTRY_FILE);
+  }
+  if (defined $options{eu_countries}){
+    $eu_country_file_path = $options{eu_countries};
+  }else{
+    $eu_country_file_path = dist_file('Geo-IPinfo', DEFAULT_EU_COUNTRY_FILE);
+  }
+  $self->{countries} = $self->_get_countries($country_file_path);
+  $self->{eu_countries} = $self->_get_countries($eu_country_file_path);
   $self->{cache} = $self->_build_cache(%options);
 
   return $self;
@@ -150,6 +164,11 @@ sub _lookup_info
   if (defined $country)
   {
     $source_info->{country_name} = $self->{countries}->{$country};
+    if ( $country ~~ $self->{eu_countries} ){
+      $source_info->{is_eu} = "True";
+    }else {
+      $source_info->{is_eu} = undef;
+    }
   }
 
   if (defined $source_info->{'loc'})
@@ -208,22 +227,10 @@ sub _lookup_info_from_source
 
 sub _get_countries
 {
-  my ($pkg, %options) = @_;
-  my $filename = undef;
-  my $data_location = undef;
-  if (defined $options{countries})
-  {
-    $filename = $options{countries};
-    $data_location = $filename;
-  }
-  else
-  {
-    $filename = DEFAULT_COUNTRY_FILE;
-    $data_location = dist_file('Geo-IPinfo', $filename);
-  }
+  my ($pkg, $file) = @_;
 
   my $json_text = do {
-    open my $fh, '<', $data_location or die "Could not open file: $filename $!\n";
+    open my $fh, '<', $file or die "Could not open file: $file $!\n";
     local $/;
     <$fh>;
   };

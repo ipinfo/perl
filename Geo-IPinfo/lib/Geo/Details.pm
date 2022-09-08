@@ -37,6 +37,10 @@ sub country_name {
   return $_[0]->{country_name};
 }
 
+sub is_eu {
+  return $_[0]->{is_eu};
+}
+
 sub loc {
   return $_[0]->{loc};
 }
