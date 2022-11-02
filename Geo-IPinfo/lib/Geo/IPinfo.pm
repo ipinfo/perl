@@ -15,6 +15,7 @@ use constant DEFAULT_CACHE_MAX_SIZE => 4096;
 use constant DEFAULT_CACHE_TTL => 86_400;
 use constant DEFAULT_COUNTRY_FILE => 'countries.json';
 use constant DEFAULT_EU_COUNTRY_FILE => 'eu.json';
+use constant DEFAULT_COUNTRY_FLAG_FILE => 'flags.json';
 use constant DEFAULT_TIMEOUT => 2;
 use constant HTTP_TOO_MANY_REQUEST => 429;
 
@@ -61,6 +62,7 @@ sub new
   
   my $country_file_path = undef;
   my $eu_country_file_path = undef;
+  my $countries_flags_file_path = undef;
   if (defined $options{countries}){
     $country_file_path = $options{countries};
   }else{
@@ -71,8 +73,14 @@ sub new
   }else{
     $eu_country_file_path = dist_file('Geo-IPinfo', DEFAULT_EU_COUNTRY_FILE);
   }
-  $self->{countries} = $self->_get_countries($country_file_path);
-  $self->{eu_countries} = $self->_get_countries($eu_country_file_path);
+  if (defined $options{countries_flags}){
+    $countries_flags_file_path = $options{countries_flags};
+  }else{
+    $countries_flags_file_path = dist_file('Geo-IPinfo', DEFAULT_COUNTRY_FLAG_FILE);
+  }
+  $self->{countries} = $self->_read_json($country_file_path);
+  $self->{eu_countries} = $self->_read_json($eu_country_file_path);
+  $self->{countries_flags} = $self->_read_json($countries_flags_file_path);
   $self->{cache} = $self->_build_cache(%options);
 
   return $self;
@@ -164,6 +172,7 @@ sub _lookup_info
   if (defined $country)
   {
     $source_info->{country_name} = $self->{countries}->{$country};
+    $source_info->{country_flag} = $self->{countries_flags}->{$country};
     if ( $country ~~ $self->{eu_countries} ){
       $source_info->{is_eu} = "True";
     }else {
@@ -225,7 +234,7 @@ sub _lookup_info_from_source
   return (undef, $response->status_line);
 }
 
-sub _get_countries
+sub _read_json
 {
   my ($pkg, $file) = @_;
 
