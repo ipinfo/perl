@@ -37,6 +37,10 @@ sub country_name {
   return $_[0]->{country_name};
 }
 
+sub country_flag {
+  return $_[0]->{country_flag};
+}
+
 sub is_eu {
   return $_[0]->{is_eu};
 }

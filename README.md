@@ -193,7 +193,7 @@ $ipinfo = Geo::IPinfo->new($token, ("timeout" => 5));
 
 #### Internationalization
 
-When looking up an IP address, the `$details` object includes a `$details->country_name` method which includes the country name based on American English and `$details->is_eu` method which returns `true` if the country is a member of the European Union (EU) else `undef`. It is possible to return the country name in other languages and change the EU countries file by setting the `countries` and `eu_countries` settings  when creating the `IPinfo` object.
+When looking up an IP address, the `$details` object includes a `$details->country_name` method which includes the country name based on American English, `$details->is_eu` method which returns `true` if the country is a member of the European Union (EU) else `undef`. and `$details->country_flag` method which returns dictionary of emoji and unicode of the country's flag. It is possible to return the country name in other languages, change the EU countries and countries flags file by setting the `countries`, `eu_countries` and `countries_flags` settings  when creating the `IPinfo` object.
 
 The file must be a `.json` file with the following structure:
 
@@ -201,9 +201,12 @@ The file must be a `.json` file with the following structure:
 
 [eu.json](./Geo-IPinfo/share/eu.json)
 
+[flags.json](./Geo-IPinfo/share/flags.json)
+
 ```perl
 $ipinfo = Geo::IPinfo->new($token, ("countries" => $path_to_countries_file));
 $ipinfo = Geo::IPinfo->new($token, ("eu_countries" => $path_to_eu_countries_file));
+$ipinfo = Geo::IPinfo->new($token, ("countries_flags" => $path_to_countries_flags_file));
 ```
 
 ### Additional Information
