@@ -17,6 +17,7 @@ use constant DEFAULT_COUNTRY_FILE => 'countries.json';
 use constant DEFAULT_EU_COUNTRY_FILE => 'eu.json';
 use constant DEFAULT_COUNTRY_FLAG_FILE => 'flags.json';
 use constant DEFAULT_COUNTRY_CURRENCY_FILE => 'currency.json';
+use constant DEFAULT_CONTINENT_FILE => 'continent.json';
 use constant DEFAULT_TIMEOUT => 2;
 use constant HTTP_TOO_MANY_REQUEST => 429;
 
@@ -65,6 +66,7 @@ sub new
   my $eu_country_file_path = undef;
   my $countries_flags_file_path = undef;
   my $countries_currencies_file_path = undef;
+  my $continent_file_path = undef;
   if (defined $options{countries}){
     $country_file_path = $options{countries};
   }else{
@@ -85,10 +87,16 @@ sub new
   }else{
     $countries_currencies_file_path = dist_file('Geo-IPinfo', DEFAULT_COUNTRY_CURRENCY_FILE);
   }
+  if (defined $options{continents}){
+    $continent_file_path = $options{continents};
+  }else{
+    $continent_file_path = dist_file('Geo-IPinfo', DEFAULT_CONTINENT_FILE);
+  }
   $self->{countries} = $self->_read_json($country_file_path);
   $self->{eu_countries} = $self->_read_json($eu_country_file_path);
   $self->{countries_flags} = $self->_read_json($countries_flags_file_path);
   $self->{countries_currencies} = $self->_read_json($countries_currencies_file_path);
+  $self->{continents} = $self->_read_json($continent_file_path);
   $self->{cache} = $self->_build_cache(%options);
 
   return $self;
@@ -182,6 +190,7 @@ sub _lookup_info
     $source_info->{country_name} = $self->{countries}->{$country};
     $source_info->{country_flag} = $self->{countries_flags}->{$country};
     $source_info->{country_currency} = $self->{countries_currencies}->{$country};
+    $source_info->{continent} = $self->{continents}->{$country};
     if ( $country ~~ $self->{eu_countries} ){
       $source_info->{is_eu} = "True";
     }else {

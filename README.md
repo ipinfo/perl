@@ -193,7 +193,7 @@ $ipinfo = Geo::IPinfo->new($token, ("timeout" => 5));
 
 #### Internationalization
 
-When looking up an IP address, the `$details` object includes a `$details->country_name` method which includes the country name based on American English, `$details->is_eu` method which returns `true` if the country is a member of the European Union (EU) else `undef`, `$details->country_flag` method which returns dictionary of emoji and unicode of the country's flag and `$details->country_currency` method which returns dictionary of code and symbol of a country's currency. It is possible to return the country name in other languages, change the EU countries, countries flags and countries currencies file by setting the `countries`, `eu_countries`, `countries_flags` and `countries_currencies` settings  when creating the `IPinfo` object.
+When looking up an IP address, the `$details` object includes a `$details->country_name` method which includes the country name based on American English, `$details->is_eu` method which returns `true` if the country is a member of the European Union (EU) else `undef`, `$details->country_flag` method which returns dictionary of emoji and unicode of the country's flag and `$details->country_currency` method which returns dictionary of code, symbol of a country's currency and `$details->continent` which includes code and name of the continent. It is possible to return the country name in other languages, change the EU countries, countries flags, countries currencies and continets file by setting the `countries`, `eu_countries`, `countries_flags`, `countries_currencies` and `continents` settings  when creating the `IPinfo` object.
 
 The file must be a `.json` file with the following structure:
 
@@ -205,11 +205,14 @@ The file must be a `.json` file with the following structure:
 
 [currency.json](./Geo-IPinfo/share/currency.json)
 
+[continent.json](./Geo-IPinfo/share/continent.json)
+
 ```perl
 $ipinfo = Geo::IPinfo->new($token, ("countries" => $path_to_countries_file));
 $ipinfo = Geo::IPinfo->new($token, ("eu_countries" => $path_to_eu_countries_file));
 $ipinfo = Geo::IPinfo->new($token, ("countries_flags" => $path_to_countries_flags_file));
 $ipinfo = Geo::IPinfo->new($token, ("countries_currencies" => $path_to_countries_currencies_file));
+$ipinfo = Geo::IPinfo->new($token, ("continents" => $path_to_continent_file));
 ```
 
 ### Additional Information

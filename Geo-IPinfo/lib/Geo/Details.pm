@@ -45,6 +45,10 @@ sub country_currency {
   return $_[0]->{country_currency};
 }
 
+sub continent {
+  return $_[0]->{continent};
+}
+
 sub is_eu {
   return $_[0]->{is_eu};
 }
