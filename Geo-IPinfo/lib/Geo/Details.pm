@@ -41,6 +41,10 @@ sub country_flag {
   return $_[0]->{country_flag};
 }
 
+sub country_flag_url {
+  return $_[0]->{country_flag_url};
+}
+
 sub country_currency {
   return $_[0]->{country_currency};
 }
