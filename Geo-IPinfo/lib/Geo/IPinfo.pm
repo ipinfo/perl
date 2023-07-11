@@ -35,6 +35,7 @@ my %valid_fields = (
                     geo => 1,
                 );
 my $base_url = 'https://ipinfo.io/';
+my $country_flag_url = 'https://cdn.ipinfo.io/static/images/countries-flags/';
 
 my $cache_ttl = 0;
 my $custom_cache = 0;
@@ -198,6 +199,7 @@ sub _lookup_info
   {
     $source_info->{country_name} = $self->{countries}->{$country};
     $source_info->{country_flag} = $self->{countries_flags}->{$country};
+    $source_info->{country_flag_url} = $country_flag_url.$country.".svg";
     $source_info->{country_currency} = $self->{countries_currencies}->{$country};
     $source_info->{continent} = $self->{continents}->{$country};
     if ( $country ~~ $self->{eu_countries} ){
