@@ -5,16 +5,45 @@ use strict;
 use warnings;
 
 sub new {
-    my $class = shift;
-    my $self = shift;
+  my $class = shift;
+  my $data = shift;
+  my $key = shift // '';
 
-    bless $self, $class;
+  # If $data is a hash reference, directly bless it into the class and return.
+  if (ref($data) eq 'HASH') {
+      bless $data, $class;
+      return $data;
+  }
 
-    return $self;
+  # If $data is a plain string, create a new hash reference and set the specified key to the string value.
+  # Use the provided key or default to ''.
+  my $self = { $key => $data };
+  bless $self, $class;
+  return $self;
+}
+
+sub abuse {
+  return $_[0]->{abuse};
 }
 
 sub ip {
   return $_[0]->{ip};
+}
+
+sub org {
+  return $_[0]->{org};
+}
+
+sub domains {
+  return $_[0]->{domains};
+}
+
+sub privacy {
+  return $_[0]->{privacy};
+}
+
+sub timezone {
+  return $_[0]->{timezone};
 }
 
 sub hostname {

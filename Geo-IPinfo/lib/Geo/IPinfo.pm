@@ -9,9 +9,9 @@ use HTTP::Headers;
 use JSON;
 use File::Share ':all';
 use Geo::Details;
-use Net::CIDR;
+use Net::CIDR::Lite;
 
-our $VERSION = '1.0';
+our $VERSION = '2.1.0';
 use constant DEFAULT_CACHE_MAX_SIZE => 4096;
 use constant DEFAULT_CACHE_TTL => 86_400;
 use constant DEFAULT_COUNTRY_FILE => 'countries.json';
@@ -28,10 +28,15 @@ my %valid_fields = (
                     city => 1,
                     region => 1,
                     country => 1,
+                    country_name => 1,
+                    country_flag_url => 1,
                     loc => 1,
+                    latitude => 1,
+                    longitude => 1,
                     org => 1,
                     postal => 1,
-                    phone => 1,
+                    is_eu => 1,
+                    timezone => 1,
                     geo => 1,
                 );
 my $base_url = 'https://ipinfo.io/';
@@ -165,7 +170,7 @@ sub _get_info
   my ($info, $message) = $self->_lookup_info($ip, $field);
   $self->{message} = $message;
 
-  return defined $info ? Geo::Details->new($info) : undef;
+  return defined $info ? Geo::Details->new($info, $field) : undef;
 }
 
 sub _lookup_info
@@ -191,6 +196,10 @@ sub _lookup_info
   my ($source_info, $message) = $self->_lookup_info_from_source($key);
   if (not defined $source_info)
   {
+    return ($source_info, $message);
+  }
+  
+  if (ref($source_info) eq '') {
     return ($source_info, $message);
   }
 
@@ -251,7 +260,18 @@ sub _lookup_info_from_source
   if ($response->is_success)
   {
    
-    my $info = from_json($response->decoded_content);
+    my $content_type = $response->header('Content-Type') || '';
+    my $info;
+
+    if ($content_type =~ m{application/json}i) {
+      eval { $info = from_json($response->decoded_content); };
+      if ($@) {
+          return (undef, 'Error parsing JSON response.');
+      }
+    } else {
+        $info = $response->decoded_content;
+        chomp($info);
+    }
 
     return ($info, '');
   }
@@ -360,8 +380,11 @@ my @bogon_networks = (
 # Check if an IP address is a bogon.
 sub _is_bogon {
 
-    my $ip = shift;
-    return Net::CIDR::cidrlookup($ip, @bogon_networks);
+  my $ip = shift;
+  my $bogon_cidr_set = Net::CIDR::Lite->new;
+  $bogon_cidr_set->add(@bogon_networks);
+
+  return $bogon_cidr_set->find($ip);
 }
 
 #-------------------------------------------------------------------------------
@@ -376,7 +399,7 @@ Geo::IPinfo -  The official Perl library for IPinfo.
 
 =head1 VERSION
 
-Version 2.0.0
+Version 2.1.0
   - Included support for country names and caching.
 
 =cut
@@ -415,7 +438,8 @@ if 'options' is specfied, the included values will allow control over cache poli
 Returns a reference to a Details object containing all information related to the IP address. In case
 of errors, returns undef, the error message can be retrieved with the function 'error_msg()'
 
-The values can be accessed with the named methods: ip, hostname, city, region, country, country_name, loc, latitude, longitude, postal, asn, company, carrier, and all.
+The values can be accessed with the named methods: ip, org, domains, privacy, abuse, timezone, hostname, city, country, country_name, country_flag,
+country_flag_url, country_currency, continent, is_eu, loc, latitude, longitude, postal, asn, company, meta, carrier, and all.
 
 =head2 geo(ip_address)
 
@@ -424,14 +448,16 @@ in case of errors, the error message can be retrieved with the function 'error_m
 
 It's usually faster than getting the full response using 'info()'
 
-The values returned are: ip, loc, city, region, country
+The values returned are: ip, city, org, loc, latitude, longitude, hostname, is_eu, country, country_name, country_flag,
+country_flag_url, country_currency, meta, continent, postal, region, and timezone.
 
 =head2 field(ip_address, field_name)
 
 Returns a reference to an object containing only the field related data. Returns undef
 if the field is invalid
 
-The possible values of 'field_name' are: ip, hostname, city, region, country, loc, org
+The possible values of 'field_name' are: ip, hostname, city, region, country, country_name, country_flag_url,
+loc, latitude, longitude, org, postal, is_eu, and timezone.
 
 =head2 error_msg( )
 
