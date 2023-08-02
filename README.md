@@ -53,7 +53,8 @@ $loc = $details->loc; # 37.8342,-122.2900
   * File::ShareDir::Install
   * JSON
   * LWP::UserAgent
-
+  * HTTP::Headers
+  * Net::CIDR::Lite
 
 #### Usage
 
