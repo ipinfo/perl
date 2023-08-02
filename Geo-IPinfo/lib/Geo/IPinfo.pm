@@ -400,7 +400,8 @@ Geo::IPinfo -  The official Perl library for IPinfo.
 =head1 VERSION
 
 Version 2.1.0
-  - Included support for country names and caching.
+  - Added support for API response of type text/content.
+  - Added following named methods: abuse, org, domains, privacy and timezone.
 
 =cut
 
