@@ -3,7 +3,6 @@ lib/Geo/IPinfo.pm
 lib/Geo/Details.pm
 Makefile.PL
 MANIFEST			This list of files
-README
 ignore.txt
 t/00-load.t
 t/01-usage.t
@@ -12,3 +11,7 @@ t/pod-coverage.t
 t/pod.t
 xt/boilerplate.t
 share/countries.json
+share/continent.json
+share/currency.json
+share/eu.json
+share/flags.json
