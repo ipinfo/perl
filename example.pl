@@ -22,7 +22,7 @@ if ( defined $data )    # valid data returned
 {
     print "Information about IP 8.8.8.8:\n";
     for my $key ( sort keys %{$data} ) {
-        printf "%10s : %s\n", $key, $data->{$key};
+        printf "%10s : %s\n", $key, defined $data->{$key} ? $data->{$key} : "N/A";
     }
     print "\n";
 }
