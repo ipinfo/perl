@@ -33,7 +33,7 @@ else   # invalid data obtained, show error message
 }
 
 # retrieve only city information of the IP address
-my $city = $ipinfo->field('8.8.8.8', 'city');
+my $details = $ipinfo->field('8.8.8.8', 'city');
 
-print "The city of 8.8.8.8 is $city\n";
+print "The city of 8.8.8.8 is " . $details->city . "\n";
 
