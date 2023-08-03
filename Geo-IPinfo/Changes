@@ -5,3 +5,9 @@ Revision history for Geo-IPinfo
 
 2.0     Nov 29, 2018
         Add Caching, breaking changes
+
+2.1     Aug 03, 2023
+        Matching to API response structure
+
+2.1.1   Aug 03, 2023
+        Fixing Testcases and formatting codebase
