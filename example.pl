@@ -6,6 +6,8 @@ use warnings;
 use lib 'Geo-IPinfo/lib';
 
 use Geo::IPinfo;
+use Data::Dumper;
+use JSON;
 
 my $token = '1234567';
 
@@ -20,13 +22,23 @@ my $data = $ipinfo->info('8.8.8.8');
 
 if ( defined $data )    # valid data returned
 {
-    print "Information about IP 8.8.8.8:\n";
+# use Data::Dumper to see the contents of the hash reference (useful for debugging)
+    print Dumper($data);
+
+    # loop and print key-value paris
+    print "\nInformation about IP 8.8.8.8:\n";
     for my $key ( sort keys %{$data} ) {
-        printf "%10s : %s\n", $key, defined $data->{$key} ? $data->{$key} : "N/A";
+        printf "%10s : %s\n", $key,
+          defined $data->{$key} ? $data->{$key} : "N/A";
     }
     print "\n";
+
+    # print JSON string
+    my $json        = JSON->new->allow_blessed->convert_blessed;
+    my $json_string = $json->utf8->pretty->encode($data);
+    print $json_string . "\n";
 }
-else                    # invalid data obtained, show error message
+else    # invalid data obtained, show error message
 {
     print $ipinfo->error_msg . "\n";
 }
