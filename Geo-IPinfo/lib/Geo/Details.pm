@@ -15,11 +15,17 @@ sub new {
         return $data;
     }
 
-# If $data is a plain string, create a new hash reference and set the specified key to the string value.
-# Use the provided key or default to ''.
+    # If $data is a plain string, create a new hash reference and set the specified key to the string value.
+    # Use the provided key or default to ''.
     my $self = { $key => $data };
     bless $self, $class;
     return $self;
+}
+
+sub TO_JSON {
+    my ($self) = @_;
+    # Return a copy of the object as a hash reference for JSON encoding
+    return { %$self };
 }
 
 sub abuse {
