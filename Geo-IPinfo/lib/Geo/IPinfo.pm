@@ -11,7 +11,7 @@ use File::Share ':all';
 use Geo::Details;
 use Net::CIDR::Lite;
 
-our $VERSION = '2.1.2';
+our $VERSION = '2.1.3';
 use constant DEFAULT_CACHE_MAX_SIZE        => 4096;
 use constant DEFAULT_CACHE_TTL             => 86_400;
 use constant DEFAULT_COUNTRY_FILE          => 'countries.json';
@@ -367,10 +367,8 @@ Geo::IPinfo -  The official Perl library for IPinfo.
 
 =head1 VERSION
 
-Version 2.1.2
-  - Added support for API response of type text/content.
-  - Added following named methods: abuse, org, domains, privacy and timezone.
-  - Fixed tests.
+Version 2.1.3
+  - Enabled JSON encoding
 
 =cut
 
