@@ -214,9 +214,10 @@ sub _lookup_info {
         $source_info->{country_currency} =
           $self->{countries_currencies}->{$country};
         $source_info->{continent} = $self->{continents}->{$country};
-        if (grep { $_ eq $country } @{$self->{eu_countries}}) {
+        if ( grep { $_ eq $country } @{ $self->{eu_countries} } ) {
             $source_info->{is_eu} = "True";
-        } else {
+        }
+        else {
             $source_info->{is_eu} = undef;
         }
     }

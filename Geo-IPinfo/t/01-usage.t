@@ -26,8 +26,8 @@ is( $ip->info("1000.1000.1.1"),
 is( $ip->field("8.8.8.8"),
     undef, "field() return undef if 'field' is missing" );
 
-my $details = $ip->field('8.8.8.8', 'city');
-my $city = $details->city;
+my $details = $ip->field( '8.8.8.8', 'city' );
+my $city    = $details->city;
 is(
     $city,
     "Mountain View",
