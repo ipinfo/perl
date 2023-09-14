@@ -1,7 +1,9 @@
 name: Release package to CPAN via Pause
 
 on:
-  workflow_dispatch
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   publish:
@@ -20,13 +22,12 @@ jobs:
         run: |
           cd Geo-IPinfo
           cpanm ExtUtils::MakeMaker LWP::UserAgent JSON File::ShareDir::Install Cache::LRU File::Share Net::CIDR::Lite
-          RELEASE_TESTING=TRUE perl Makefile.PL && make test && make distcheck && make dist
+          perl Makefile.PL && RELEASE_TESTING=TRUE make test && make distcheck && make dist
       
       - name: Upload to CPAN
         run: |
-          pwd
           cd Geo-IPinfo
-          cpan-upload --dry-run -v -u $USERNAME -p $PASSWORD *.tar.gz
+          cpan-upload -v -u $USERNAME -p $PASSWORD *.tar.gz
         env:
           USERNAME: ${{ secrets.PAUSE_USERNAME }}
           PASSWORD: ${{ secrets.PAUSE_PASSWORD }}
