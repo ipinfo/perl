@@ -16,11 +16,13 @@ jobs:
           perl-version: '5.34'
           install-modules: 'CPAN::Uploader'
       
-      - name: Install dependencies
-        run: cpanm --installdeps .
+      - name: Install package and dependencies
+        run: |
+          cd Geo-IPinfo
+          cpanm --installdeps .
       
-      - name: Run tests
-        run: prove -lv t
+      - name: Test and build
+        run: perl Makefile.PL && make test && make distcheck && make dist
       
       - name: Upload to CPAN
         run: cpan-upload --dry-run -v -u $USERNAME -p $PASSWORD *.tar.gz
