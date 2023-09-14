@@ -1,0 +1,23 @@
+name: Release package to cpan via Pause
+
+on: workflow_dispatch
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up perl environment
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: '5.34'
+          install-modules: 'CPAN::Uploader'
+      - name: Install and run tests
+      - run: cpanm --installdeps .
+      - run: prove -lv t
+      - name: Upload to cpan
+        run: cpan-upload --dry-run -v -u $USERNAME -p $PASSWORD *.tar.gz
+        env:
+          RELEASE_TESTING: TRUE
+          USERNAME: ${{ secrets.PAUSE_USERNAME }}
+          PASSWORD: ${{ secrets.PAUSE_PASSWORD }}
