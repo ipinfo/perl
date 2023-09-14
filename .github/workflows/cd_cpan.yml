@@ -20,11 +20,13 @@ jobs:
         run: |
           cd Geo-IPinfo
           cpanm ExtUtils::MakeMaker LWP::UserAgent JSON File::ShareDir::Install Cache::LRU File::Share Net::CIDR::Lite
-          perl Makefile.PL && make test && make distcheck && make dist
+          RELEASE_TESTING=TRUE perl Makefile.PL && make test && make distcheck && make dist
       
       - name: Upload to CPAN
-        run: cpan-upload --dry-run -v -u $USERNAME -p $PASSWORD *.tar.gz
+        run: |
+          pwd
+          cd Geo-IPinfo
+          cpan-upload --dry-run -v -u $USERNAME -p $PASSWORD *.tar.gz
         env:
-          RELEASE_TESTING: TRUE
           USERNAME: ${{ secrets.PAUSE_USERNAME }}
           PASSWORD: ${{ secrets.PAUSE_PASSWORD }}
