@@ -14,7 +14,9 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: '5.34'
-          install-modules: 'CPAN::Uploader'
+          install-modules: |
+            'File::ShareDir::Install'
+            'CPAN::Uploader'
       
       - name: Test and build
         run: |
