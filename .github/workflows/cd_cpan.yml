@@ -19,6 +19,7 @@ jobs:
       - name: Install package and dependencies
         run: |
           cd Geo-IPinfo
+          pwd
           cpanm --installdeps .
       
       - name: Test and build
