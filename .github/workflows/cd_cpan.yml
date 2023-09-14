@@ -14,13 +14,12 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: '5.34'
-          install-modules: |
-            'File::ShareDir::Install'
-            'CPAN::Uploader'
+          install-modules: 'CPAN::Uploader'
       
       - name: Test and build
         run: |
           cd Geo-IPinfo
+          cpanm File::ShareDir::Install
           perl Makefile.PL && make test && make distcheck && make dist
       
       - name: Upload to CPAN
