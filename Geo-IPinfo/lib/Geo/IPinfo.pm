@@ -9,6 +9,7 @@ use HTTP::Headers;
 use JSON;
 use File::Share ':all';
 use Geo::Details;
+use Net::CIDR;
 use Net::CIDR::Set;
 
 our $VERSION = '3.0.0';
@@ -1059,6 +1060,7 @@ sub new {
     my ( $pkg, $token, %options ) = @_;
 
     my $self = {};
+    $token = defined $token ? $token : '';
 
     $self->{base_url} = $base_url;
     $self->{ua}       = LWP::UserAgent->new;
@@ -1159,8 +1161,23 @@ sub _get_info {
     $ip    = defined $ip    ? $ip    : '';
     $field = defined $field ? $field : '';
 
+    if ( $ip ne '' ) {
+        my $validated_ip = Net::CIDR::cidrvalidate($ip);
+        if (!defined $validated_ip) {
+            $self->{message} = 'Invalid IP address';
+            return undef;
+        }
+    }
+
     my ( $info, $message ) = $self->_lookup_info( $ip, $field );
     $self->{message} = $message;
+
+    if ( $field ne '' && ref($info) eq 'HASH') {
+        if ( exists $info->{'bogon'} ) {
+            $self->{message} = 'Field info not available for bogon IPs';
+            return undef;
+        }
+    }
 
     return defined $info ? Geo::Details->new( $info, $field ) : undef;
 }
