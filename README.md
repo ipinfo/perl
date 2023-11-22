@@ -54,7 +54,7 @@ $loc = $details->loc; # 37.8342,-122.2900
   * JSON
   * LWP::UserAgent
   * HTTP::Headers
-  * Net::CIDR::Lite
+  * Net::CIDR::Set
 
 #### Usage
 
@@ -99,7 +99,7 @@ $hostname = $details->hostname; # cpe-104-175-221-247.socal.res.rr.com
 
 ##### Country Name
 
-`Details->country_name` will return the country name, as supplied by the `countries.json` file. See below for instructions on changing that file for use with non-English languages. `Details->country` will still return the country code.
+`Details->country_name` will return the country name. See below for instructions on changing these country names for use with non-English languages. `Details->country` will still return the country code.
 
 ```perl
 $country = $details->country; # US
@@ -194,26 +194,32 @@ $ipinfo = Geo::IPinfo->new($token, ("timeout" => 5));
 
 #### Internationalization
 
-When looking up an IP address, the `$details` object includes a `$details->country_name` method which includes the country name based on American English, `$details->is_eu` method which returns `true` if the country is a member of the European Union (EU) else `undef`, `$details->country_flag` method which returns a dictionary of emoji and Unicode of the country's flag, `$details->country_flag_url` will return a public link to the country's flag image as an SVG which can be used anywhere and `$details->country_currency` method which returns a dictionary of code, the symbol of a country's currency and `$details->continent` which includes code and name of the continent. It is possible to return the country name in other languages, change the EU countries, countries flags, countries' currencies, and continents file by setting the `countries`, `eu_countries`, `countries_flags`, `countries_currencies` and `continents` settings  when creating the `IPinfo` object.
-
-The file must be a `.json` file with the following structure:
-
-[countries.json](./Geo-IPinfo/share/countries.json)
-
-[eu.json](./Geo-IPinfo/share/eu.json)
-
-[flags.json](./Geo-IPinfo/share/flags.json)
-
-[currency.json](./Geo-IPinfo/share/currency.json)
-
-[continent.json](./Geo-IPinfo/share/continent.json)
+When looking up an IP address, the `$details` object includes a `$details->country_name` method which includes the country name based on American English, `$details->is_eu` method which returns `true` if the country is a member of the European Union (EU) else `undef`, `$details->country_flag` method which returns a dictionary of emoji and Unicode of the country's flag, `$details->country_flag_url` will return a public link to the country's flag image as an SVG which can be used anywhere and `$details->country_currency` method which returns a dictionary of code, the symbol of a country's currency and `$details->continent` which includes code and name of the continent. It is possible to return the country name in other languages, change the EU countries, countries flags, countries' currencies, and continents by setting the `countries`, `eu_countries`, `countries_flags`, `countries_currencies` and `continents` settings  when creating the `IPinfo` object. The `countries`, `countries_flags`, `countries_currencies`, and `continents` are hashes while `eu_countries` is an array.
 
 ```perl
-$ipinfo = Geo::IPinfo->new($token, ("countries" => $path_to_countries_file));
-$ipinfo = Geo::IPinfo->new($token, ("eu_countries" => $path_to_eu_countries_file));
-$ipinfo = Geo::IPinfo->new($token, ("countries_flags" => $path_to_countries_flags_file));
-$ipinfo = Geo::IPinfo->new($token, ("countries_currencies" => $path_to_countries_currencies_file));
-$ipinfo = Geo::IPinfo->new($token, ("continents" => $path_to_continent_file));
+my %custom_countries = (
+    "US" => "Custom United States",
+    "DE" => "Custom Germany"
+);
+my @custom_eu_countries = ( "FR", "DE" );
+my %custom_countries_flags = (
+    'AD' => { 'emoji' => '🇦🇩', 'unicode' => 'U+1F1E6 U+1F1E9' },
+    'AE' => { 'emoji' => '🇦🇪', 'unicode' => 'U+1F1E6 U+1F1EA' }
+);
+my %custom_countries_currencies = (
+    'AD' => { 'code' => 'EUR', 'symbol' => '€' },
+    'AE' => { 'code' => 'AED', 'symbol' => 'د.إ' }
+);
+my %custom_continents = (
+    "BE" => { "code" => "EU", "name" => "Europe" },
+    "BF" => { "code" => "AF", "name" => "Africa" }
+);
+
+$ipinfo = Geo::IPinfo->new($token, countries => \%custom_countries);
+$ipinfo = Geo::IPinfo->new($token, eu_countries => \@custom_eu_countries);
+$ipinfo = Geo::IPinfo->new($token, countries_flags => \%custom_countries_flags);
+$ipinfo = Geo::IPinfo->new($token, countries_currencies => \%custom_countries_currencies);
+$ipinfo = Geo::IPinfo->new($token, continents => \%custom_continents);
 ```
 
 ### Additional Information
