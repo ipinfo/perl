@@ -1163,7 +1163,7 @@ sub _get_info {
 
     if ( $ip ne '' ) {
         my $validated_ip = Net::CIDR::cidrvalidate($ip);
-        if (!defined $validated_ip) {
+        if ( !defined $validated_ip ) {
             $self->{message} = 'Invalid IP address';
             return undef;
         }
@@ -1172,7 +1172,7 @@ sub _get_info {
     my ( $info, $message ) = $self->_lookup_info( $ip, $field );
     $self->{message} = $message;
 
-    if ( $field ne '' && ref($info) eq 'HASH') {
+    if ( $field ne '' && ref($info) eq 'HASH' ) {
         if ( exists $info->{'bogon'} ) {
             $self->{message} = 'Field info not available for bogon IPs';
             return undef;
