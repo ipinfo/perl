@@ -37,6 +37,8 @@ my %valid_fields = (
 );
 my $base_url          = 'https://ipinfo.io/';
 my $country_flag_url  = 'https://cdn.ipinfo.io/static/images/countries-flags/';
+my $cache_ttl    = 0;
+my $custom_cache = 0;
 my %default_countries = (
     "BD" => "Bangladesh",
     "BE" => "Belgium",
@@ -1050,9 +1052,6 @@ my %default_continents = (
     "QA" => { "code" => "AS", "name" => "Asia" },
     "MZ" => { "code" => "AF", "name" => "Africa" }
 );
-
-my $cache_ttl    = 0;
-my $custom_cache = 0;
 
 #-------------------------------------------------------------------------------
 

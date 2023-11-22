@@ -54,6 +54,7 @@ $loc = $details->loc; # 37.8342,-122.2900
   * JSON
   * LWP::UserAgent
   * HTTP::Headers
+  * Net::CIDR
   * Net::CIDR::Set
 
 #### Usage
