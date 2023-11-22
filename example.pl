@@ -23,7 +23,7 @@ my $ipinfo = Geo::IPinfo->new($token);
 # my $ipinfo = Geo::IPinfo->new();
 
 # provide your own countries and eu countries
-my $ipinfo = Geo::IPinfo->new($token, countries => \%custom_countries, eu_countries => \@custom_eu_countries);
+# my $ipinfo = Geo::IPinfo->new($token, countries => \%custom_countries, eu_countries => \@custom_eu_countries);
 
 # return a hash reference containing all IP related information
 my $data = $ipinfo->info('8.8.8.8');

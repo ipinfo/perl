@@ -173,6 +173,10 @@ Creates a new Geo::Details object. If C<$data> is a hash reference, it directly 
 
 C<$key> is an optional parameter used when C<$data> is a plain string. It defaults to an empty string if not provided.
 
+=head2 TO_JSON
+
+This method is used to convert the object to a JSON representation.
+
 =head2 abuse
 
     my $abuse_email = $geo_details->abuse();

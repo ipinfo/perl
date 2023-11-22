@@ -21,7 +21,7 @@ jobs:
       - name: Test and build
         run: |
           cd Geo-IPinfo
-          cpanm ExtUtils::MakeMaker LWP::UserAgent JSON File::ShareDir::Install Cache::LRU File::Share Net::CIDR::Lite
+          cpanm ExtUtils::MakeMaker LWP::UserAgent JSON File::ShareDir::Install Cache::LRU File::Share Net::CIDR Net::CIDR::Set
           perl Makefile.PL && RELEASE_TESTING=TRUE make test && make distcheck && make dist
       
       - name: Upload to CPAN

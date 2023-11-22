@@ -17,3 +17,6 @@ Revision history for Geo-IPinfo
 
 2.1.3   Aug 09, 2023
         Enabled JSON encoding and updated docs
+
+3.0.0   Nov 22, 2023
+        Inlined data files
