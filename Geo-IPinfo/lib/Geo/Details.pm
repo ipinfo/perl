@@ -15,8 +15,8 @@ sub new {
         return $data;
     }
 
-# If $data is a plain string, create a new hash reference and set the specified key to the string value.
-# Use the provided key or default to ''.
+    # If $data is a plain string, create a new hash reference and set the specified key to the string value.
+    # Use the provided key or default to ''.
     my $self = { $key => $data };
     bless $self, $class;
     return $self;
@@ -172,6 +172,10 @@ Geo::Details is a simple module that represents details of a geographical locati
 Creates a new Geo::Details object. If C<$data> is a hash reference, it directly blesses it into the class and returns the object. If C<$data> is a plain string, it creates a new hash reference with the specified key and sets the string value.
 
 C<$key> is an optional parameter used when C<$data> is a plain string. It defaults to an empty string if not provided.
+
+=head2 TO_JSON
+
+This method is used to convert the object to a JSON representation.
 
 =head2 abuse
 

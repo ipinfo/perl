@@ -10,12 +10,20 @@ use Data::Dumper;
 use JSON;
 
 my $token = '1234567';
+my %custom_countries = (
+    "US" => "Custom United States",
+    "DE" => "Custom Germany"
+);
+my @custom_eu_countries = ( "FR", "DE" );
 
 # if you have a valid token, use it
 my $ipinfo = Geo::IPinfo->new($token);
 
 # or, if you don't have a token, use this:
 # my $ipinfo = Geo::IPinfo->new();
+
+# provide your own countries and eu countries
+# my $ipinfo = Geo::IPinfo->new($token, countries => \%custom_countries, eu_countries => \@custom_eu_countries);
 
 # return a hash reference containing all IP related information
 my $data = $ipinfo->info('8.8.8.8');
