@@ -7,7 +7,6 @@ use Cache::LRU;
 use LWP::UserAgent;
 use HTTP::Headers;
 use JSON;
-use File::Share ':all';
 use Geo::Details;
 use Net::CIDR;
 use Net::CIDR::Set;

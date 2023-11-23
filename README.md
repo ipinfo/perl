@@ -49,8 +49,6 @@ $loc = $details->loc; # 37.8342,-122.2900
 
 #### Dependencies
   * Cache::LRU
-  * File::Share
-  * File::ShareDir::Install
   * JSON
   * LWP::UserAgent
   * HTTP::Headers
