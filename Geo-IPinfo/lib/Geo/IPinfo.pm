@@ -35,6 +35,7 @@ my %valid_fields = (
     domains  => 1,
 );
 my $base_url          = 'https://ipinfo.io/';
+my $base_url_ipv6     = 'https://v6.ipinfo.io/';
 my $country_flag_url  = 'https://cdn.ipinfo.io/static/images/countries-flags/';
 my $cache_ttl    = 0;
 my $custom_cache = 0;
@@ -1060,8 +1061,9 @@ sub new {
     my $self = {};
     $token = defined $token ? $token : '';
 
-    $self->{base_url} = $base_url;
-    $self->{ua}       = LWP::UserAgent->new;
+    $self->{base_url}      = $base_url;
+    $self->{base_url_ipv6} = $base_url_ipv6;
+    $self->{ua}            = LWP::UserAgent->new;
     $self->{ua}->ssl_opts( 'verify_hostname' => 0 );
     $self->{ua}->default_headers(
         HTTP::Headers->new(
@@ -1198,7 +1200,9 @@ sub _lookup_info {
         return ( $cached_info, '' );
     }
 
-    my ( $source_info, $message ) = $self->_lookup_info_from_source($key);
+    my $is_ipv6 = 0;
+    $is_ipv6 = 1 if ( $ip =~ /:/ );
+    my ( $source_info, $message ) = $self->_lookup_info_from_source($is_ipv6, $key);
     if ( not defined $source_info ) {
         return ( $source_info, $message );
     }
@@ -1253,9 +1257,15 @@ sub _lookup_info_from_cache {
 }
 
 sub _lookup_info_from_source {
-    my ( $self, $key ) = @_;
-
-    my $url      = $self->{base_url} . $key;
+    my ( $self, $is_ipv6, $key ) = @_;
+    
+    my $url = '';
+    if ( $is_ipv6 ) {
+        $url = $self->{base_url_ipv6} . $key;
+    } else {
+        $url = $self->{base_url} . $key;
+    }
+    
     my $response = $self->{ua}->get($url);
 
     if ( $response->is_success ) {

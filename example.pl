@@ -51,8 +51,20 @@ else    # invalid data obtained, show error message
     print $ipinfo->error_msg . "\n";
 }
 
+# you can also retrieve information for IPv6 addresses in a similar fasion
+my $ipv6_data = $ipinfo->info('2001:4860:4860::8888');
+if ( defined $ipv6_data )    # valid data returned
+{
+        # print JSON string
+    my $json        = JSON->new->allow_blessed->convert_blessed;
+    my $json_string = $json->utf8->pretty->encode($ipv6_data);
+    print $json_string . "\n";
+}
+else    # invalid data obtained, show error message
+{
+    print $ipinfo->error_msg . "\n";
+}
+
 # retrieve only city information of the IP address
 my $details = $ipinfo->field( '8.8.8.8', 'city' );
-
 print "The city of 8.8.8.8 is " . $details->city . "\n";
-
