@@ -51,8 +51,8 @@ else    # invalid data obtained, show error message
     print $ipinfo->error_msg . "\n";
 }
 
-# you can also retrieve information for IPv6 addresses in a similar fasion
-my $ipv6_data = $ipinfo->info('2001:4860:4860::8888');
+# you can also retrieve information for IPv6 addresses in a similar fashion
+my $ipv6_data = $ipinfo->info_v6('2001:4860:4860::8888');
 if ( defined $ipv6_data )    # valid data returned
 {
         # print JSON string
