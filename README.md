@@ -57,7 +57,7 @@ $loc = $details->loc; # 37.8342,-122.2900
 
 #### Usage
 
-The `Geo::IPinfo->info()` method accepts an IPv4 address as an optional, positional argument. If no IP address is specified, the API will return data for the IP address from which it receives the request. The `Geo::IPinfo->info_v6()` method works in a similar fashion but for IPv6 addresses. Both methods can also be set to always do IPv6 lookups by setting `ipv6_lookup" => 1` while initializing the client.
+The `Geo::IPinfo->info()` method accepts an IPv4 address as an optional, positional argument. If no IP address is specified, the API will return data for the IP address from which it receives the request. The `Geo::IPinfo->info_v6()` method works in a similar fashion but for IPv6 addresses.
 
 ```perl
 use Geo::IPinfo;
@@ -185,13 +185,12 @@ $ipinfo = Geo::IPinfo->new($token, ("cache" => $my_custom_cache));
 
 
 ### Request options
-The request lookup type and timeout period can be set in the `%options` parameter.
+The request timeout period can be set in the `%options` parameter.
 
 * Default request timeout: 2 seconds
-* Default lookup type: IPv4
 
 ```perl
-$ipinfo = Geo::IPinfo->new($token, ("timeout" => 5, "ipv6_lookup" => 1));
+$ipinfo = Geo::IPinfo->new($token, ("timeout" => 5));
 ```
 
 #### Internationalization

@@ -1076,8 +1076,6 @@ sub new {
     my $timeout =
       defined $options{timeout} ? $options{timeout} : DEFAULT_TIMEOUT;
     $self->{ua}->timeout($timeout);
-    $self->{ipv6_lookup} = defined $options{ipv6_lookup}
-      ? $options{ipv6_lookup} : 0;
 
     $self->{message} = '';
 
@@ -1117,7 +1115,7 @@ sub new {
 sub info {
     my ( $self, $ip ) = @_;
 
-    return $self->_get_info( $ip, '', $self->{ipv6_lookup} );
+    return $self->_get_info( $ip, '', 0 );
 }
 
 #-------------------------------------------------------------------------------
@@ -1133,7 +1131,7 @@ sub info_v6 {
 sub geo {
     my ( $self, $ip ) = @_;
 
-    return $self->_get_info( $ip, 'geo', $self->{ipv6_lookup} );
+    return $self->_get_info( $ip, 'geo', 0 );
 }
 
 #-------------------------------------------------------------------------------
@@ -1151,7 +1149,7 @@ sub field {
         return;
     }
 
-    return $self->_get_info( $ip, $field, $self->{ipv6_lookup} );
+    return $self->_get_info( $ip, $field, 0 );
 }
 
 #-------------------------------------------------------------------------------
@@ -1212,9 +1210,7 @@ sub _lookup_info {
         return ( $cached_info, '' );
     }
 
-    my $is_ipv6 = 0;
-    $is_ipv6 = 1 if ( $ip =~ /:/ || $ipv6_lookup);
-    my ( $source_info, $message ) = $self->_lookup_info_from_source($is_ipv6, $key);
+    my ( $source_info, $message ) = $self->_lookup_info_from_source($ipv6_lookup, $key);
     if ( not defined $source_info ) {
         return ( $source_info, $message );
     }
@@ -1414,7 +1410,7 @@ A quick usage example:
     $loc = $details->loc; # 37.4056,-122.0775
 
     $ip_address = '2001:4860:4860::8888';
-    $details = $ipinfo->info($ip_address);
+    $details = $ipinfo->info_v6($ip_address);
     $city = $details->city; # Mountain View
     $loc = $details->loc; # 37.4056,-122.0775
 
@@ -1433,7 +1429,7 @@ if 'options' is specfied, the included values will allow control over cache poli
 
 =head2 info(ip_address)
 
-Returns a reference to a Details object containing all information related to the IP address. In case
+Returns a reference to a Details object containing all information related to the IPv4 address. In case
 of errors, returns undef, the error message can be retrieved with the function 'error_msg()'
 
 The values can be accessed with the named methods: ip, org, domains, privacy, abuse, timezone, hostname, city, country, country_name, country_flag,
@@ -1441,7 +1437,7 @@ country_flag_url, country_currency, continent, is_eu, loc, latitude, longitude, 
 
 =head2 info_v6(ip_address)
 
-Returns a reference to a Details object containing all information related to the IP address. In case
+Returns a reference to a Details object containing all information related to the IPv6 address. In case
 of errors, returns undef, the error message can be retrieved with the function 'error_msg()'
 
 The values can be accessed with the named methods: ip, org, domains, privacy, abuse, timezone, hostname, city, country, country_name, country_flag,
