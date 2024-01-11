@@ -35,6 +35,7 @@ my %valid_fields = (
     domains  => 1,
 );
 my $base_url          = 'https://ipinfo.io/';
+my $base_url_ipv6     = 'https://v6.ipinfo.io/';
 my $country_flag_url  = 'https://cdn.ipinfo.io/static/images/countries-flags/';
 my $cache_ttl    = 0;
 my $custom_cache = 0;
@@ -1060,8 +1061,9 @@ sub new {
     my $self = {};
     $token = defined $token ? $token : '';
 
-    $self->{base_url} = $base_url;
-    $self->{ua}       = LWP::UserAgent->new;
+    $self->{base_url}      = $base_url;
+    $self->{base_url_ipv6} = $base_url_ipv6;
+    $self->{ua}            = LWP::UserAgent->new;
     $self->{ua}->ssl_opts( 'verify_hostname' => 0 );
     $self->{ua}->default_headers(
         HTTP::Headers->new(
@@ -1113,7 +1115,15 @@ sub new {
 sub info {
     my ( $self, $ip ) = @_;
 
-    return $self->_get_info( $ip, '' );
+    return $self->_get_info( $ip, '', 0 );
+}
+
+#-------------------------------------------------------------------------------
+
+sub info_v6 {
+    my ( $self, $ip ) = @_;
+
+    return $self->_get_info( $ip, '', 1 );
 }
 
 #-------------------------------------------------------------------------------
@@ -1121,7 +1131,7 @@ sub info {
 sub geo {
     my ( $self, $ip ) = @_;
 
-    return $self->_get_info( $ip, 'geo' );
+    return $self->_get_info( $ip, 'geo', 0 );
 }
 
 #-------------------------------------------------------------------------------
@@ -1139,7 +1149,7 @@ sub field {
         return;
     }
 
-    return $self->_get_info( $ip, $field );
+    return $self->_get_info( $ip, $field, 0 );
 }
 
 #-------------------------------------------------------------------------------
@@ -1154,7 +1164,7 @@ sub error_msg {
 #-- private method(s) below, don't call them directly -------------------------
 
 sub _get_info {
-    my ( $self, $ip, $field ) = @_;
+    my ( $self, $ip, $field, $ipv6_lookup ) = @_;
 
     $ip    = defined $ip    ? $ip    : '';
     $field = defined $field ? $field : '';
@@ -1167,7 +1177,7 @@ sub _get_info {
         }
     }
 
-    my ( $info, $message ) = $self->_lookup_info( $ip, $field );
+    my ( $info, $message ) = $self->_lookup_info( $ip, $field, $ipv6_lookup );
     $self->{message} = $message;
 
     if ( $field ne '' && ref($info) eq 'HASH' ) {
@@ -1181,14 +1191,16 @@ sub _get_info {
 }
 
 sub _lookup_info {
-    my ( $self, $ip, $field ) = @_;
+    my ( $self, $ip, $field, $ipv6_lookup ) = @_;
 
     # checking bogon IP and returning response locally.
-    if ( _is_bogon($ip) ) {
-        my $details = {};
-        $details->{ip}    = $ip;
-        $details->{bogon} = "True";
-        return ( $details, '' );
+    if ( $ip ne '' ) {
+        if ( _is_bogon($ip) ) {
+            my $details = {};
+            $details->{ip}    = $ip;
+            $details->{bogon} = "True";
+            return ( $details, '' );
+        }
     }
 
     my $key         = $ip . '/' . $field;
@@ -1198,7 +1210,7 @@ sub _lookup_info {
         return ( $cached_info, '' );
     }
 
-    my ( $source_info, $message ) = $self->_lookup_info_from_source($key);
+    my ( $source_info, $message ) = $self->_lookup_info_from_source($ipv6_lookup, $key);
     if ( not defined $source_info ) {
         return ( $source_info, $message );
     }
@@ -1253,9 +1265,15 @@ sub _lookup_info_from_cache {
 }
 
 sub _lookup_info_from_source {
-    my ( $self, $key ) = @_;
+    my ( $self, $is_ipv6, $key ) = @_;
 
-    my $url      = $self->{base_url} . $key;
+    my $url = '';
+    if ( $is_ipv6 ) {
+        $url = $self->{base_url_ipv6} . $key;
+    } else {
+        $url = $self->{base_url} . $key;
+    }
+    
     my $response = $self->{ua}->get($url);
 
     if ( $response->is_success ) {
@@ -1388,8 +1406,13 @@ A quick usage example:
 
     $ip_address = '216.239.36.21';
     $details = $ipinfo->info($ip_address);
-    $city = $details->city; # Emeryville
-    $loc = $details->loc; # 37.8342,-122.2900
+    $city = $details->city; # Mountain View
+    $loc = $details->loc; # 37.4056,-122.0775
+
+    $ip_address = '2001:4860:4860::8888';
+    $details = $ipinfo->info_v6($ip_address);
+    $city = $details->city; # Mountain View
+    $loc = $details->loc; # 37.4056,-122.0775
 
 =head1 SUBROUTINES/METHODS
 
@@ -1406,7 +1429,15 @@ if 'options' is specfied, the included values will allow control over cache poli
 
 =head2 info(ip_address)
 
-Returns a reference to a Details object containing all information related to the IP address. In case
+Returns a reference to a Details object containing all information related to the IPv4 address. In case
+of errors, returns undef, the error message can be retrieved with the function 'error_msg()'
+
+The values can be accessed with the named methods: ip, org, domains, privacy, abuse, timezone, hostname, city, country, country_name, country_flag,
+country_flag_url, country_currency, continent, is_eu, loc, latitude, longitude, postal, asn, company, meta, carrier, and all.
+
+=head2 info_v6(ip_address)
+
+Returns a reference to a Details object containing all information related to the IPv6 address. In case
 of errors, returns undef, the error message can be retrieved with the function 'error_msg()'
 
 The values can be accessed with the named methods: ip, org, domains, privacy, abuse, timezone, hostname, city, country, country_name, country_flag,

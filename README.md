@@ -57,7 +57,7 @@ $loc = $details->loc; # 37.8342,-122.2900
 
 #### Usage
 
-The `Geo::IPinfo->info()` method accepts an IP address as an optional, positional argument. If no IP address is specified, the API will return data for the IP address from which it receives the request.
+The `Geo::IPinfo->info()` method accepts an IPv4 address as an optional, positional argument. If no IP address is specified, the API will return data for the IP address from which it receives the request. The `Geo::IPinfo->info_v6()` method works in a similar fashion but for IPv6 addresses.
 
 ```perl
 use Geo::IPinfo;
@@ -65,6 +65,8 @@ use Geo::IPinfo;
 $access_token = '123456789abc';
 $ipinfo = Geo::IPinfo->new($access_token);
 $details = $ipinfo->info($ip_address);
+# for IPv6
+# $details = $ipinfo->info_v6($ip_address);
 
 if (defined $details)   # valid data returned
 {
@@ -90,7 +92,7 @@ $ipinfo = Geo::IPinfo->new($access_token);
 
 #### Details Data
 
-`Geo::IPinfo->info()` will return a `Details` object that contains all fields listed in the [IPinfo developer docs](https://ipinfo.io/developers/responses#full-response) with a few minor additions. Properties can be accessed through methods of the same name.
+`Geo::IPinfo->info()` and `Geo::IPinfo->info_v6()` will return a `Details` object that contains all fields listed in the [IPinfo developer docs](https://ipinfo.io/developers/responses#full-response) with a few minor additions. Properties can be accessed through methods of the same name.
 
 ```perl
 $hostname = $details->hostname; # cpe-104-175-221-247.socal.res.rr.com
@@ -193,7 +195,7 @@ $ipinfo = Geo::IPinfo->new($token, ("timeout" => 5));
 
 #### Internationalization
 
-When looking up an IP address, the `$details` object includes a `$details->country_name` method which includes the country name based on American English, `$details->is_eu` method which returns `true` if the country is a member of the European Union (EU) else `undef`, `$details->country_flag` method which returns a dictionary of emoji and Unicode of the country's flag, `$details->country_flag_url` will return a public link to the country's flag image as an SVG which can be used anywhere and `$details->country_currency` method which returns a dictionary of code, the symbol of a country's currency and `$details->continent` which includes code and name of the continent. It is possible to return the country name in other languages, change the EU countries, countries flags, countries' currencies, and continents by setting the `countries`, `eu_countries`, `countries_flags`, `countries_currencies` and `continents` settings  when creating the `IPinfo` object. The `countries`, `countries_flags`, `countries_currencies`, and `continents` are hashes while `eu_countries` is an array.
+When looking up an IP address, the `$details` object includes a `$details->country_name` method which includes the country name based on American English, `$details->is_eu` method which returns `true` if the country is a member of the European Union (EU) else `undef`, `$details->country_flag` method which returns a dictionary of emoji and Unicode of the country's flag, `$details->country_flag_url` will return a public link to the country's flag image as an SVG which can be used anywhere and `$details->country_currency` method which returns a dictionary of code, the symbol of a country's currency and `$details->continent` which includes code and name of the continent. It is possible to return the country name in other languages, change the EU countries, countries flags, countries' currencies, and continents by setting the `countries`, `eu_countries`, `countries_flags`, `countries_currencies` and `continents` settings when creating the `IPinfo` object. The `countries`, `countries_flags`, `countries_currencies`, and `continents` are hashes while `eu_countries` is an array.
 
 ```perl
 my %custom_countries = (
