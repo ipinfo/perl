@@ -11,7 +11,7 @@ use Geo::Details;
 use Net::CIDR;
 use Net::CIDR::Set;
 
-our $VERSION = '3.0.1';
+our $VERSION = '3.0.2';
 use constant DEFAULT_CACHE_MAX_SIZE => 4096;
 use constant DEFAULT_CACHE_TTL      => 86_400;
 use constant DEFAULT_TIMEOUT        => 2;
@@ -1179,6 +1179,7 @@ sub _get_info {
 
     my ( $info, $message ) = $self->_lookup_info( $ip, $field, $ipv6_lookup );
     $self->{message} = $message;
+    return $info if eval { $info->isa('Geo::Details') };
 
     if ( $field ne '' && ref($info) eq 'HASH' ) {
         if ( exists $info->{'bogon'} ) {
@@ -1273,7 +1274,7 @@ sub _lookup_info_from_source {
     } else {
         $url = $self->{base_url} . $key;
     }
-    
+
     my $response = $self->{ua}->get($url);
 
     if ( $response->is_success ) {
