@@ -1179,6 +1179,7 @@ sub _get_info {
 
     my ( $info, $message ) = $self->_lookup_info( $ip, $field, $ipv6_lookup );
     $self->{message} = $message;
+    return $info if eval { $info->isa('Geo::Details') };
 
     if ( $field ne '' && ref($info) eq 'HASH' ) {
         if ( exists $info->{'bogon'} ) {
@@ -1273,7 +1274,7 @@ sub _lookup_info_from_source {
     } else {
         $url = $self->{base_url} . $key;
     }
-    
+
     my $response = $self->{ua}->get($url);
 
     if ( $response->is_success ) {
