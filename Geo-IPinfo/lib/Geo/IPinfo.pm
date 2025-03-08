@@ -11,7 +11,7 @@ use Geo::Details;
 use Net::CIDR;
 use Net::CIDR::Set;
 
-our $VERSION = '3.0.1';
+our $VERSION = '3.0.2';
 use constant DEFAULT_CACHE_MAX_SIZE => 4096;
 use constant DEFAULT_CACHE_TTL      => 86_400;
 use constant DEFAULT_TIMEOUT        => 2;
