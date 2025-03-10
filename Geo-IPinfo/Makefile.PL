@@ -26,6 +26,22 @@ WriteMakefile(
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Geo-IPinfo-*' },
+
+    'META_MERGE' => {
+        'meta-spec' => { version => 2 },
+        keywords    => ['geo', 'network'],
+        resources => {
+            repository => {
+                type => 'git',
+                url  => 'https://github.com/ipinfo/perl',
+                web  => 'https://github.com/ipinfo/perl',
+                },
+            bugtracker => {
+                web    => "https://github.com/ipinfo/perl/issues",
+                },
+            homepage => 'https://ipinfo.io',
+            },
+        },
 );
 
 package MY;
