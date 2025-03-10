@@ -21,7 +21,7 @@ WriteMakefile(
         'LWP::UserAgent'          => '0',
         'JSON'                    => '0',
         'Cache::LRU'              => '0',
-        'Net::CIDR'               => '0',      
+        'Net::CIDR'               => '0.22',
         'Net::CIDR::Set'          => '0',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
