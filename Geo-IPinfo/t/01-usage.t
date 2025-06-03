@@ -5,7 +5,7 @@ use warnings;
 use Test::More;
 
 if ( $ENV{RELEASE_TESTING} ) {
-    plan tests => 7;
+    plan tests => 9;
 }
 else {
     plan( skip_all => "Basic usage tests not required for installation" );
@@ -35,3 +35,9 @@ is(
 );
 is( $ip->field( "192.168.0.1", "city" ),
     undef, "field() return 'undef' when getting fields of private IPs" );
+
+IPv6: {
+	my $h = $ip->info("2001:4860:4860::8888");
+	isa_ok $h, 'Geo::Details', "info() return a hash when querying a valid IPv6";
+	is $h->city, 'Mountain View', 'Google city is correct';
+}

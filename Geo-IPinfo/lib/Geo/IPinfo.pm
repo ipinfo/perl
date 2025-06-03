@@ -35,7 +35,6 @@ my %valid_fields = (
     domains  => 1,
 );
 my $base_url          = 'https://ipinfo.io/';
-my $base_url_ipv6     = 'https://v6.ipinfo.io/';
 my $country_flag_url  = 'https://cdn.ipinfo.io/static/images/countries-flags/';
 my $cache_ttl    = 0;
 my $custom_cache = 0;
@@ -1062,7 +1061,7 @@ sub new {
     $token = defined $token ? $token : '';
 
     $self->{base_url}      = $base_url;
-    $self->{base_url_ipv6} = $base_url_ipv6;
+    $self->{base_url_ipv6} = $base_url;
     $self->{ua}            = LWP::UserAgent->new;
     $self->{ua}->ssl_opts( 'verify_hostname' => 0 );
     $self->{ua}->default_headers(
@@ -1273,7 +1272,7 @@ sub _lookup_info_from_source {
     } else {
         $url = $self->{base_url} . $key;
     }
-    
+
     my $response = $self->{ua}->get($url);
 
     if ( $response->is_success ) {
