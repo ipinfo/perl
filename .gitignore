@@ -1,2 +1,6 @@
 ./t
 .vscode
+Geo-IPinfo/blib
+Geo-IPinfo/MYMETA*
+Geo-IPinfo/Makefile
+Geo-IPinfo/pm_to_blib
