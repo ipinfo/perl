@@ -5,7 +5,7 @@ use warnings;
 use Test::More;
 
 if ( $ENV{RELEASE_TESTING} ) {
-    plan tests => 7;
+    plan tests => 10;
 }
 else {
     plan( skip_all => "Basic usage tests not required for installation" );
@@ -35,3 +35,7 @@ is(
 );
 is( $ip->field( "192.168.0.1", "city" ),
     undef, "field() return 'undef' when getting fields of private IPs" );
+
+ok($ip->info( '2001:4860:4860::8888', 'city' ), "info() works with compressed IPv6");
+ok($ip->info( '2001:4860:4860:0:0:0:0:8888', 'city' ), "info() works with short expanded IPv6");
+ok($ip->info( '2001:4860:4860:0000:0000:0000:0000:8888', 'city' ), "info() works with long expanded IPv6");
