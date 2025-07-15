@@ -23,6 +23,7 @@ WriteMakefile(
         'Cache::LRU'              => '0',
         'Net::CIDR'               => '0.22',
         'Net::CIDR::Set'          => '0',
+        'LWP::Protocol::https'    => '0',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Geo-IPinfo-*' },
