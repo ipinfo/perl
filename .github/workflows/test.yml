@@ -22,11 +22,11 @@ jobs:
           install-modules: "CPAN::Uploader"
 
       - name: Test and build
+        working-directory: ./Geo-IPinfo
         env:
           RELEASE_TESTING: TRUE
           IPINFO_TOKEN: ${{ secrets.IPINFO_TOKEN }}
         run: |
-          cd Geo-IPinfo
-          cpanm ExtUtils::MakeMaker LWP::UserAgent JSON Cache::LRU Net::CIDR Net::CIDR::Set
+          cpanm --notest --installdeps .
           perl Makefile.PL
           make test
