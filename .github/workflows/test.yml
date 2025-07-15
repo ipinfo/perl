@@ -1,0 +1,32 @@
+name: Run tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Perl environment
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: "5.34"
+          install-modules: "CPAN::Uploader"
+
+      - name: Test and build
+        env:
+          RELEASE_TESTING: TRUE
+          IPINFO_TOKEN: ${{ secrets.IPINFO_TOKEN }}
+        run: |
+          cd Geo-IPinfo
+          cpanm ExtUtils::MakeMaker LWP::UserAgent JSON Cache::LRU Net::CIDR Net::CIDR::Set
+          perl Makefile.PL
+          make test
