@@ -15,7 +15,7 @@ use_ok('Geo::IPinfo');
 
 my $ip;
 
-$ip = Geo::IPinfo->new();
+$ip = Geo::IPinfo->new( $ENV{IPINFO_TOKEN} );
 isa_ok( $ip, "Geo::IPinfo", '$ip' );
 
 ok( $ip->info("8.8.8.8"), "info() return a hash when querying a valid IP" );
