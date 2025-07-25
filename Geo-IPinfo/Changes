@@ -20,3 +20,11 @@ Revision history for Geo-IPinfo
 
 3.0.0   Nov 22, 2023
         Inlined data files
+
+3.0.1   Aug 28, 2024
+        No-op
+
+3.1.0   Jul 24, 2025
+        Return the cache result if there is a cache hit
+        Net::CIDR 0.22 fixes the non-compressed IPv6 issue; add repository metadata to Makefile.PL
+        Add IPinfoLite to support Lite API
