@@ -28,3 +28,6 @@ Revision history for Geo-IPinfo
         Return the cache result if there is a cache hit
         Net::CIDR 0.22 fixes the non-compressed IPv6 issue; add repository metadata to Makefile.PL
         Add IPinfoLite to support Lite API
+
+3.1.2   Nov 13, 2025
+        Add missing Lite API files to release package
