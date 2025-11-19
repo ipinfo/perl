@@ -2,9 +2,11 @@ Changes
 lib/Geo/IPinfo.pm
 lib/Geo/IPinfoLite.pm
 lib/Geo/IPinfoCore.pm
+lib/Geo/IPinfoPlus.pm
 lib/Geo/Details.pm
 lib/Geo/DetailsLite.pm
 lib/Geo/DetailsCore.pm
+lib/Geo/DetailsPlus.pm
 Makefile.PL
 MANIFEST			This list of files
 ignore.txt
@@ -12,6 +14,7 @@ t/00-load.t
 t/01-usage.t
 t/02-usage-lite.t
 t/03-usage-core.t
+t/04-usage-plus.t
 t/cache-hit.t
 t/manifest.t
 t/pod-coverage.t
