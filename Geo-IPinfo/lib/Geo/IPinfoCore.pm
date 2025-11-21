@@ -11,7 +11,7 @@ use Geo::DetailsCore;
 use Net::CIDR;
 use Net::CIDR::Set;
 
-our $VERSION = '3.1.2';
+our $VERSION = '3.2.0';
 use constant DEFAULT_CACHE_MAX_SIZE => 4096;
 use constant DEFAULT_CACHE_TTL      => 86_400;
 use constant DEFAULT_TIMEOUT        => 2;
@@ -62,7 +62,7 @@ sub new {
         : DEFAULT_TIMEOUT;
 
     my $header = HTTP::Headers->new();
-    $header->header( 'User-Agent'   => 'IPinfoClient/Perl/3.1.2' );
+    $header->header( 'User-Agent'   => 'IPinfoClient/Perl/3.2.0' );
     $header->header( 'Accept'       => 'application/json' );
     $header->header( 'Content-Type' => 'application/json' );
 

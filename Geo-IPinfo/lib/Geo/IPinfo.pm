@@ -11,7 +11,7 @@ use Geo::Details;
 use Net::CIDR;
 use Net::CIDR::Set;
 
-our $VERSION = '3.1.2';
+our $VERSION = '3.2.0';
 use constant DEFAULT_CACHE_MAX_SIZE => 4096;
 use constant DEFAULT_CACHE_TTL      => 86_400;
 use constant DEFAULT_TIMEOUT        => 2;
@@ -1389,7 +1389,7 @@ Geo::IPinfo -  The official Perl library for IPinfo.
 
 =head1 VERSION
 
-Version 3.1.2
+Version 3.2.0
 
 =cut
 
