@@ -1136,6 +1136,66 @@ sub geo {
 
 #-------------------------------------------------------------------------------
 
+sub resproxy {
+    my ( $self, $ip ) = @_;
+
+    $ip = defined $ip ? $ip : '';
+
+    if ( $ip eq '' ) {
+        $self->{message} = 'IP address is required for resproxy lookup';
+        return undef;
+    }
+
+    my $validated_ip = Net::CIDR::cidrvalidate($ip);
+    if ( !defined $validated_ip ) {
+        $self->{message} = 'Invalid IP address';
+        return undef;
+    }
+
+    my $cache_key   = 'resproxy/' . $ip;
+    my $cached_info = $self->_lookup_info_from_cache($cache_key);
+
+    if ( defined $cached_info ) {
+        $self->{message} = '';
+        return $cached_info;
+    }
+
+    my $url      = $self->{base_url} . 'resproxy/' . $ip;
+    my $response = $self->{ua}->get($url);
+
+    if ( $response->is_success ) {
+        my $content_type = $response->header('Content-Type') || '';
+        my $info;
+
+        if ( $content_type =~ m{application/json}i ) {
+            eval { $info = from_json( $response->decoded_content ); };
+            if ($@) {
+                $self->{message} = 'Error parsing JSON response.';
+                return undef;
+            }
+        }
+        else {
+            $info = $response->decoded_content;
+            chomp($info);
+        }
+
+        $info->{meta}->{time} = time();
+        $self->{cache}->set( $cache_key, $info );
+        $self->{message} = '';
+        return $info;
+    }
+
+    if ( $response->code == HTTP_TOO_MANY_REQUEST ) {
+        $self->{message} = 'Your monthly request quota has been exceeded.';
+        return undef;
+    }
+
+    $self->{message} = $response->status_line;
+    return undef;
+}
+
+#-------------------------------------------------------------------------------
+
 sub field {
     my ( $self, $ip, $field ) = @_;
 
