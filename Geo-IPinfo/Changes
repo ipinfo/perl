@@ -35,3 +35,6 @@ Revision history for Geo-IPinfo
 3.2.0   Nov 21, 2025
         Add IPinfoCore to support Core API
         Add IPinfoPlus to support Plus API
+
+3.3.0   Jan 22, 2026
+        Update IPinfo to support Residential Proxy Detection API
