@@ -168,12 +168,64 @@ The returned details are slightly different from the Core API.
 use Geo::IPinfoLite;
 
 $access_token = '123456789abc';
-$ipinfo = Geo::IPinfo->new($access_token);
+$ipinfo = Geo::IPinfoLite->new($access_token);
 
 $ip_address = '216.239.36.21';
 $details = $ipinfo->info($ip_address);
 $country_code = $details->country_code; # US
 $country = $details->country; # United States
+```
+
+### Core API
+
+The library also supports the [Core API](https://ipinfo.io/developers/data-types#core-data), which provides city-level geolocation with nested geo and AS objects. Authentication with your token is required.
+
+```perl
+use Geo::IPinfoCore;
+
+$access_token = '123456789abc';
+$ipinfo = Geo::IPinfoCore->new($access_token);
+
+$details = $ipinfo->info('8.8.8.8');
+$ip = $details->ip; # 8.8.8.8
+$city = $details->geo->{city}; # Mountain View
+$country = $details->geo->{country}; # United States
+$asn = $details->as->{asn}; # AS15169
+$as_name = $details->as->{name}; # Google LLC
+```
+
+### Plus API
+
+The library also supports the [Plus API](https://ipinfo.io/developers/data-types#plus-data), which provides enhanced data including mobile carrier info and privacy detection. Authentication with your token is required.
+
+```perl
+use Geo::IPinfoPlus;
+
+$access_token = '123456789abc';
+$ipinfo = Geo::IPinfoPlus->new($access_token);
+
+$details = $ipinfo->info('8.8.8.8');
+$ip = $details->ip; # 8.8.8.8
+$city = $details->geo->{city}; # Mountain View
+$mobile = $details->mobile; # mobile carrier info
+$is_proxy = $details->anonymous->{is_proxy}; # false
+```
+
+### Residential Proxy API
+
+The library also supports the [Residential Proxy API](https://ipinfo.io/developers/residential-proxy-api), which allows you to check if an IP address is a residential proxy. Authentication with your token is required.
+
+```perl
+use Geo::IPinfo;
+
+$access_token = '123456789abc';
+$ipinfo = Geo::IPinfo->new($access_token);
+
+$resproxy = $ipinfo->get_resproxy('175.107.211.204');
+$ip = $resproxy->{ip}; # 175.107.211.204
+$last_seen = $resproxy->{last_seen}; # 2025-01-20
+$percent_days_seen = $resproxy->{percent_days_seen}; # 0.85
+$service = $resproxy->{service}; # Bright Data
 ```
 
 #### Caching
