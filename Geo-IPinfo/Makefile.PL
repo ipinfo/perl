@@ -16,6 +16,8 @@ WriteMakefile(
     },
     BUILD_REQUIRES => {
         'Test::More' => '0',
+        'Test::Mock::LWP::Dispatch' => '0',
+        'HTTP::Response' => '0',
     },
     PREREQ_PM => {
         'LWP::UserAgent'          => '0',
