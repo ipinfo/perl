@@ -38,3 +38,6 @@ Revision history for Geo-IPinfo
 
 3.3.0   Jan 22, 2026
         Update IPinfo to support Residential Proxy Detection API
+
+3.4.0   Mar 30, 2026
+        Update Bulgaria currency from BGN to EUR
