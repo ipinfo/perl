@@ -23,7 +23,7 @@ jobs:
           IPINFO_TOKEN: ${{ secrets.IPINFO_TOKEN }}
         run: |
           cd Geo-IPinfo
-          cpanm ExtUtils::MakeMaker LWP::UserAgent JSON Cache::LRU Net::CIDR Net::CIDR::Set
+          cpanm --notest --installdeps .
           perl Makefile.PL && RELEASE_TESTING=TRUE make test && make distcheck && make dist
 
       - name: Upload to CPAN
